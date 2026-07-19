@@ -267,3 +267,12 @@ Contributions welcome! Areas of focus:
 - **Payment integration**: Mobile money (m-Gurush, Fari) for order payments
 - **Analytics**: Price trends, supply maps, demand forecasting
 - **Offline sync**: Store-and-forward for areas with intermittent connectivity
+
+---
+
+## 🧭 Other ventures in this repo
+
+| Project | Folder / Stack | Idea |
+|---|---|---|
+| 🏠 **PropTech — Verified Rental Listings** | [`proptech/`](proptech/) · static HTML/CSS/JS | Killing Juba's rental scams: every house/land listing is physically verified by a field agent (GPS + timestamped photos) before it earns a badge. Revenue: $25 verification fee + 5% success commission. |
+| 💸 **Junub Pay** | [`src/`](src/) · Next.js 14 | Diaspora remittance & direct bill-payment corridor for South Sudan. |

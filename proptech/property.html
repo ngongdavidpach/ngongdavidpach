@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property details | PropTech Juba</title>
+<meta name="description" content="Verified property details with GPS-confirmed location, timestamped photos and the full PropTech verification report.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230e7a6c'/%3E%3Cpath d='M9 19.5 20 10l11 9.5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 18.5V31h16V18.5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 24l2.2 2.2L24 21.5' stroke='%235eead4' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .sim-title { font-size: 1.35rem; }
+  .badge--xl { font-size: .8rem; padding: .45rem .8rem; }
+  .badge--xl svg { width: 15px; height: 15px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-in">
+    <a class="brand" href="index.html" aria-label="PropTech home">
+      <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect width="40" height="40" rx="10" fill="#0e7a6c"/>
+        <path d="M9 19.5 20 10l11 9.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 18.5V31h16V18.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 24l2.2 2.2L24 21.5" stroke="#5eead4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand__name">PropTech<em>JUBA</em></span>
+    </a>
+    <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="listings.html" class="active">Browse Homes</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="agents.html">Field Agents</a>
+      <a class="btn btn-primary btn-sm nav-cta" href="list-property.html">List a property</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main class="container" style="padding-bottom:2rem">
+  <div class="page-head" style="padding-bottom:0">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span>
+      <a href="listings.html">Browse listings</a><span>/</span>
+      <span id="crumbTitle">Property</span>
+    </nav>
+  </div>
+
+  <div id="propRoot">
+    <div class="empty"><h3>Loading listing…</h3><p>Fetching the verification file.</p></div>
+  </div>
+
+  <div id="similarWrap"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect width="40" height="40" rx="10" fill="#0e7a6c"/>
+          <path d="M9 19.5 20 10l11 9.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 18.5V31h16V18.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17 24l2.2 2.2L24 21.5" stroke="#5eead4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand__name">PropTech<em>JUBA</em></span>
+      </a>
+      <p>Verified rental listings &amp; land for Juba, South Sudan. Every listing inspected in person — GPS-tagged, photographed, documented.</p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <a href="listings.html">Browse verified homes</a>
+      <a href="listings.html?lt=sale">Land for sale</a>
+      <a href="property.html?id=PT-1001">Sample verification report</a>
+      <a href="pricing.html">Pricing</a>
+    </div>
+    <div>
+      <h4>For owners</h4>
+      <a href="list-property.html">List your property</a>
+      <a href="pricing.html#faq">Verification FAQ</a>
+      <a href="agents.html">Field-agent console (demo)</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul class="footer-contact">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0c0 4.8-6.5 10-6.5 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Hai Malakal, off Ministries Road, Juba</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l1.5 4.5L8 10a12 12 0 0 0 6 6l1.5-2.5L20 15v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>+211 915 234 800 · Mon–Sat, 8:00–18:00</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 0-3.2 6.4L20 19l-.8-3.1A8 8 0 0 0 20 12z"/></svg>hello@proptech.ss</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span data-year>2026</span> PropTech Ltd · Juba, South Sudan</span>
+    <span>Demonstration website — listings, people &amp; prices are illustrative.</span>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/property.js"></script>
+</body>
+</html>
