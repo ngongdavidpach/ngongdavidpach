@@ -1,0 +1,99 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Driver Dashboard — JunubLogistics{% endblock %}
+{% block content %}
+<section class="jl-driver-wrap" style="grid-template-columns:1fr; max-width:1200px;">
+  <div class="jl-card">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h2 style="margin:0;">🏍️ Karibu, {{ driver.full_name }}</h2>
+        <div style="color:var(--jl-muted);">
+          {{ driver.plate_number or 'motorbike' }} · {{ driver.vehicle_type }} · Rating ⭐ {{ '%.1f'|format(driver.rating) }}
+        </div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <span id="duty-status" style="color:var(--jl-muted);">Location: sharing…</span>
+        <button id="duty-btn" class="jl-on-duty-btn {{ 'on' if driver.is_on_duty else 'off' }}">
+          {{ '🟢 On duty' if driver.is_on_duty else '⚪ Off duty' }}
+        </button>
+      </div>
+    </div>
+    <div class="jl-stat-row" style="margin-top:18px;">
+      <div class="jl-stat-box"><strong>{{ driver.total_deliveries }}</strong><span style="color:var(--jl-muted); font-size:0.85rem;">Deliveries</span></div>
+      <div class="jl-stat-box"><strong>£{{ '%d'|format(driver.earnings_ssp|int) }}</strong><span style="color:var(--jl-muted); font-size:0.85rem;">Lifetime earnings (SSP)</span></div>
+      <div class="jl-stat-box"><strong>{{ my_active|length }}</strong><span style="color:var(--jl-muted); font-size:0.85rem;">Active jobs</span></div>
+      <div class="jl-stat-box"><strong id="nearby-count">{{ nearby|length }}</strong><span style="color:var(--jl-muted); font-size:0.85rem;">Jobs near you</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="jl-driver-wrap">
+  <div>
+    <h3>📍 Nearby available jobs</h3>
+    <div id="nearby-list">
+      {% if not nearby %}
+        <div class="jl-card">No nearby jobs right now. Make sure you're on duty and your GPS is on.</div>
+      {% endif %}
+      {% for d_km, job in nearby %}
+        <div class="jl-job-card">
+          <header>
+            <span class="jl-code">{{ job.tracking_code }}</span>
+            <span class="jl-status jl-status-{{ job.status }}">{{ job.status.upper() }}</span>
+          </header>
+          <div>📍 <b>Pickup:</b> {{ job.pickup_label or 'GPS pin' }} ({{ d_km }} km from you)</div>
+          <div style="color:var(--jl-muted); font-size:0.9rem;">{{ job.pickup_notes }}</div>
+          <div>🏁 <b>Drop-off:</b> {{ job.dropoff_label or 'GPS pin' }}</div>
+          <div style="color:var(--jl-muted); font-size:0.9rem;">{{ job.description or '' }}</div>
+          <div style="margin-top:8px; color:var(--jl-primary); font-weight:700;">Payout: £{{ '%d'|format(job.driver_payout_ssp|int) }} SSP · {{ job.distance_km }} km</div>
+          <div class="jl-job-actions">
+            <a class="jl-btn-ghost" href="{{ url_for('logistics.driver_job', jid=job.id) }}">View</a>
+            <button class="jl-btn-primary accept-btn" data-jid="{{ job.id }}">Accept job</button>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div>
+    <h3>🚨 Active jobs</h3>
+    {% if not my_active %}
+      <div class="jl-card">You have no active jobs.</div>
+    {% endif %}
+    {% for job in my_active %}
+      <div class="jl-job-card">
+        <header>
+          <span class="jl-code">{{ job.tracking_code }}</span>
+          <span class="jl-status jl-status-{{ job.status }}">{{ job.status.replace('_',' ').upper() }}</span>
+        </header>
+        <div>📍 Pickup: {{ job.pickup_label }}</div>
+        <div>🏁 Drop-off: {{ job.dropoff_label }} · {{ job.recipient_name }}</div>
+        <div class="jl-job-actions">
+          <a class="jl-btn-primary" href="{{ url_for('logistics.driver_job', jid=job.id) }}">Open job →</a>
+        </div>
+      </div>
+    {% endfor %}
+
+    <h3 style="margin-top:24px;">✅ Recent deliveries</h3>
+    {% for job in my_past[:10] %}
+      <div class="jl-job-card" style="opacity:0.8;">
+        <header>
+          <span class="jl-code">{{ job.tracking_code }}</span>
+          <span class="jl-status jl-status-{{ job.status }}">{{ job.status.upper() }}</span>
+        </header>
+        <div>{{ job.recipient_name }} · £{{ '%d'|format(job.driver_payout_ssp|int) }} SSP</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block foot_extra %}
+<script>
+window.__DRIVER__ = {
+  pingUrl: "{{ url_for('logistics.api_ping') }}",
+  dutyUrl: "{{ url_for('logistics.api_toggle_duty') }}",
+  jobsUrl: "{{ url_for('logistics.api_nearby_jobs') }}",
+  acceptUrl: function(id){ return "/logistics/api/accept/"+id; },
+  dashboardUrl: "{{ url_for('logistics.driver_dashboard') }}"
+};
+</script>
+<script src="{{ url_for('logistics.static', filename='js/driver.js') }}"></script>
+{% endblock %}

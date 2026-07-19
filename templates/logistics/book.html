@@ -1,0 +1,120 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Book a delivery — JunubLogistics{% endblock %}
+{% block content %}
+<section class="jl-book">
+  <div>
+    <h2 style="margin-top:0;">📍 Book an address-less delivery</h2>
+    <p style="color:var(--jl-muted); margin-top:0;">
+      Tap the map to set your <b style="color:var(--jl-primary)">pickup</b>, then tap again for your
+      <b style="color:var(--jl-accent)">drop-off</b>. You can also use one of the landmark shortcuts below.
+    </p>
+    <div class="jl-pin-chips" id="quick-pickup">
+      <span class="jl-chip" data-role="pickup-label">Quick pickup:</span>
+      {% for a in pin_areas %}
+        <button type="button" class="jl-chip" data-role="pickup" data-lat="{{ a.lat }}" data-lng="{{ a.lng }}" data-name="{{ a.name }}">{{ a.name }}</button>
+      {% endfor %}
+    </div>
+    <div class="jl-pin-chips" id="quick-dropoff" style="margin-top:8px;">
+      <span class="jl-chip" data-role="pickup-label">Quick drop-off:</span>
+      {% for a in pin_areas %}
+        <button type="button" class="jl-chip" data-role="dropoff" data-lat="{{ a.lat }}" data-lng="{{ a.lng }}" data-name="{{ a.name }}">{{ a.name }}</button>
+      {% endfor %}
+    </div>
+    <div id="booking-map" class="jl-map" style="margin-top:14px;"></div>
+  </div>
+
+  <aside class="jl-booking-panel">
+    <h3>Delivery details</h3>
+    <div class="jl-step-tabs">
+      <div class="jl-step-tab active" id="tab-pickup">1. Pickup</div>
+      <div class="jl-step-tab" id="tab-dropoff">2. Drop-off</div>
+      <div class="jl-step-tab" id="tab-confirm">3. Confirm</div>
+    </div>
+    <form id="booking-form">
+      <div id="sec-pickup">
+        <div class="jl-field">
+          <label>Pickup landmark / label</label>
+          <input id="pickup_label" name="pickup_label" placeholder="e.g. Opposite Juba Teaching Hospital" />
+        </div>
+        <div class="jl-field">
+          <label>Pickup notes for the rider</label>
+          <textarea id="pickup_notes" name="pickup_notes" rows="2" placeholder="e.g. Ask for Mary at cosmetics shop, blue gate"></textarea>
+        </div>
+        <div class="jl-field-row">
+          <div class="jl-field"><label>Pickup lat</label><input id="pickup_lat" name="pickup_lat" readonly placeholder="tap map" /></div>
+          <div class="jl-field"><label>Pickup lng</label><input id="pickup_lng" name="pickup_lng" readonly placeholder="tap map" /></div>
+        </div>
+        <button type="button" class="jl-btn-primary jl-btn-wide" id="to-dropoff">Next: set drop-off →</button>
+      </div>
+
+      <div id="sec-dropoff" style="display:none;">
+        <div class="jl-field">
+          <label>Recipient name</label>
+          <input id="recipient_name" name="recipient_name" required placeholder="Who receives the parcel?" />
+        </div>
+        <div class="jl-field">
+          <label>Recipient phone (+211…)</label>
+          <input id="recipient_phone" name="recipient_phone" required placeholder="+211922…" />
+        </div>
+        <div class="jl-field">
+          <label>Drop-off landmark / label</label>
+          <input id="dropoff_label" name="dropoff_label" placeholder="e.g. Gudele block 4 near borehole" />
+        </div>
+        <div class="jl-field">
+          <label>Drop-off notes</label>
+          <textarea id="dropoff_notes" name="dropoff_notes" rows="2" placeholder="e.g. Green door after Duk Duk restaurant"></textarea>
+        </div>
+        <div class="jl-field-row">
+          <div class="jl-field"><label>Drop lat</label><input id="dropoff_lat" name="dropoff_lat" readonly placeholder="tap map" /></div>
+          <div class="jl-field"><label>Drop lng</label><input id="dropoff_lng" name="dropoff_lng" readonly placeholder="tap map" /></div>
+        </div>
+        <button type="button" class="jl-btn-ghost jl-btn-wide" id="back-pickup">← Back to pickup</button>
+        <button type="button" class="jl-btn-primary jl-btn-wide" id="to-confirm" style="margin-top:8px;">Next: confirm & quote →</button>
+      </div>
+
+      <div id="sec-confirm" style="display:none;">
+        <div class="jl-field">
+          <label>Package size</label>
+          <select id="package_size" name="package_size">
+            {% for s in package_sizes %}
+              <option value="{{ s }}">{{ s|capitalize }} — {% if s=='small' %}&lt;2kg{% elif s=='medium' %}2-10kg{% else %}10-30kg{% endif %}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="jl-field">
+          <label>Parcel description</label>
+          <input id="description" name="description" placeholder="e.g. Shoes — Jumia order #123" />
+        </div>
+        <div class="jl-field">
+          <label>Payment</label>
+          <select id="payment_method" name="payment_method">
+            <option value="cash">Cash on delivery (SSP)</option>
+            <option value="mobile_money">Mobile money (m-Gurush / Fari)</option>
+          </select>
+        </div>
+
+        <div class="jl-quote" id="quote-box" style="display:none;">
+          <div>Estimated fare</div>
+          <div class="price" id="quote-price">£— SSP</div>
+          <div class="detail"><span id="quote-km">—</span> km · <span id="quote-payout">£— SSP</span> to rider</div>
+        </div>
+        <div id="quote-warn" style="margin-top:10px; color:var(--jl-warn); font-size:0.9rem; display:none;"></div>
+
+        <button type="submit" class="jl-btn-primary jl-btn-wide" id="confirm-btn" style="margin-top:12px;" disabled>📦 Confirm booking</button>
+      </div>
+    </form>
+  </aside>
+</section>
+{% endblock %}
+
+{% block foot_extra %}
+<script>
+  window.__JL__ = {
+    center: [{{ center[0] }}, {{ center[1] }}],
+    quoteUrl: "{{ url_for('logistics.api_quote_fare') }}",
+    createUrl: "{{ url_for('logistics.api_create_delivery') }}",
+    myDeliveriesUrl: "{{ url_for('logistics.my_deliveries') }}",
+  };
+</script>
+<script src="{{ url_for('logistics.static', filename='js/booking.js') }}"></script>
+{% endblock %}

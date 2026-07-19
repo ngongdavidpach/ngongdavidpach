@@ -1,0 +1,24 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Customer login — JunubLogistics{% endblock %}
+{% block content %}
+<div class="jl-auth-wrap">
+  <div class="jl-auth-card">
+    <h2>📦 Customer login</h2>
+    <p style="color:var(--jl-muted); margin-top:0;">Log in to book or track your deliveries.</p>
+    <form method="post">
+      <div class="jl-field">
+        <label>Phone number</label>
+        <input name="phone" required placeholder="+211922123456" />
+      </div>
+      <div class="jl-field">
+        <label>Password</label>
+        <input type="password" name="password" required />
+      </div>
+      <button class="jl-btn-primary jl-btn-wide" type="submit">Log in</button>
+    </form>
+    <p style="margin-top:16px; color:var(--jl-muted); text-align:center;">
+      New here? <a href="{{ url_for('logistics.customer_signup') }}">Create an account</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
