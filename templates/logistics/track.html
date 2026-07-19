@@ -1,0 +1,114 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Track a parcel — JunubLogistics{% endblock %}
+{% block content %}
+<section class="jl-track-wrap">
+  <h2>📦 Track a JunubLogistics parcel</h2>
+  <form class="jl-track-top" method="get">
+    <input name="code" value="{{ code }}" placeholder="Enter tracking code e.g. JL-7A2B9X" />
+    <button class="jl-btn-primary" type="submit">Track</button>
+  </form>
+
+  {% if delivery %}
+  <div class="jl-track-body">
+    <div>
+      <div id="track-map" class="jl-map" style="height:400px;"></div>
+      <div class="jl-card" style="margin-top:14px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Pickup</div>
+            <div style="font-weight:600;">{{ delivery.pickup_label or 'GPS pin' }}</div>
+            <div style="color:var(--jl-muted); font-size:0.85rem;">{{ delivery.pickup_notes }}</div>
+          </div>
+          <div>
+            <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Drop-off</div>
+            <div style="font-weight:600;">{{ delivery.dropoff_label or 'GPS pin' }}</div>
+            <div style="color:var(--jl-muted); font-size:0.85rem;">{{ delivery.dropoff_notes }}</div>
+          </div>
+          <div>
+            <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Recipient</div>
+            <div>{{ delivery.recipient_name }} · {{ delivery.recipient_phone }}</div>
+          </div>
+          <div>
+            <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Rider</div>
+            <div>{% if delivery.driver %}{{ delivery.driver.full_name }} · {{ delivery.driver.plate_number or 'motorbike' }}{% else %}Awaiting assignment{% endif %}</div>
+          </div>
+        </div>
+        <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div><b>£{{ '%d'|format(delivery.fee_ssp|int) }} SSP</b> · {{ delivery.payment_method.replace('_',' ').title() }}</div>
+          <div class="jl-status jl-status-{{ delivery.status }}">{{ delivery.status.replace('_',' ').upper() }}</div>
+        </div>
+      </div>
+    </div>
+    <aside class="jl-timeline">
+      <h3 style="margin-top:0;">Delivery timeline</h3>
+      <ol>
+        {% set event_statuses = ['pending','assigned','picked_up','delivered'] %}
+        {% set reached = false %}
+        {% for s in event_statuses %}
+          {% set ns = namespace(found=false) %}
+          {% for ev in delivery.tracking_events %}
+            {% if ev.status == s %}{% set ns.found = true %}{% endif %}
+          {% endfor %}
+          <li class="{% if ns.found or delivery.status=='cancelled' %}done{% endif %} {% if delivery.status==s %}current{% endif %}">
+            <b>{{ s.replace('_',' ').title() }}</b>
+            {% if s == 'pending' %}<small>Booked {{ delivery.created_at.strftime('%d %b %Y, %H:%M') }}</small>{% endif %}
+            {% if s == 'assigned' and delivery.assigned_at %}<small>{{ delivery.assigned_at.strftime('%d %b %H:%M') }} — rider dispatched</small>{% endif %}
+            {% if s == 'picked_up' and delivery.picked_up_at %}<small>{{ delivery.picked_up_at.strftime('%d %b %H:%M') }} — on its way</small>{% endif %}
+            {% if s == 'delivered' and delivery.delivered_at %}<small>{{ delivery.delivered_at.strftime('%d %b %H:%M') }} — handed over</small>{% endif %}
+          </li>
+        {% endfor %}
+        {% if delivery.status == 'cancelled' %}
+          <li class="done"><b>Cancelled</b><small>{{ delivery.cancel_reason }}</small></li>
+        {% endif %}
+      </ol>
+      {% if delivery.handover_pin and delivery.status not in ['delivered','cancelled'] %}
+        <div style="margin-top:12px; padding:12px; background:rgba(255,176,32,0.15); border-radius:10px;">
+          <div style="font-size:0.8rem; color:var(--jl-warn); text-transform:uppercase; letter-spacing:1px;">Handover PIN (recipient)</div>
+          <div class="jl-handover-pin" style="margin-top:6px; font-size:1.2rem;">{{ delivery.handover_pin }}</div>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+  {% elif code %}
+    <div class="jl-card">No delivery found for code <b>{{ code }}</b>. Please check and try again.</div>
+  {% else %}
+    <p style="color:var(--jl-muted);">Or just message <b>TRACK JL-CODE</b> to our WhatsApp number and we'll reply with live updates.</p>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block foot_extra %}
+{% if delivery %}
+<script>
+(function(){
+  const p = [{{ delivery.pickup_lat }}, {{ delivery.pickup_lng }}];
+  const d = [{{ delivery.dropoff_lat }}, {{ delivery.dropoff_lng }}];
+  const map = L.map('track-map').setView([(p[0]+d[0])/2, (p[1]+d[1])/2], 14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19, attribution:'© OSM'}).addTo(map);
+  const pI = L.divIcon({className:'',html:'<div style="background:#ff7a1a;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;"></div>',iconSize:[26,26],iconAnchor:[13,26]});
+  const dI = L.divIcon({className:'',html:'<div style="background:#19b372;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;"></div>',iconSize:[26,26],iconAnchor:[13,26]});
+  L.marker(p,{icon:pI}).addTo(map).bindPopup('Pickup');
+  L.marker(d,{icon:dI}).addTo(map).bindPopup('Drop-off');
+  L.polyline([p,d],{color:'#ff7a1a',weight:4,dashArray:'6 8'}).addTo(map);
+  {% if delivery.driver and delivery.driver.current_lat and delivery.status in ['assigned','picked_up'] %}
+    const riderI = L.divIcon({className:'',html:'<div style="font-size:28px;">🏍️</div>',iconSize:[28,28],iconAnchor:[14,14]});
+    const rider = L.marker([{{ delivery.driver.current_lat }},{{ delivery.driver.current_lng }}],{icon:riderI,zIndexOffset:1000}).addTo(map).bindPopup('Your rider');
+    async function refresh(){
+      try{
+        const r = await fetch("{{ url_for('logistics.api_live', code=delivery.tracking_code) }}");
+        const j = await r.json();
+        if (j.ok && j.delivery.driver && j.delivery.driver.lat){
+          rider.setLatLng([j.delivery.driver.lat, j.delivery.driver.lng]);
+        }
+      }catch(e){}
+    }
+    setInterval(refresh, 15000);
+  {% endif %}
+})();
+</script>
+{% else %}
+<script>
+  const map = L.map(document.createElement('div')).setView([{{ center[0] }},{{ center[1] }}], 13);
+</script>
+{% endif %}
+{% endblock %}

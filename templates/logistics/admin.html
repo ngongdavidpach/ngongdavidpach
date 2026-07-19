@@ -1,0 +1,104 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}JunubLogistics Admin{% endblock %}
+{% block content %}
+<section class="jl-admin">
+  <h2>🛠️ JunubLogistics · Operations dashboard</h2>
+  <div class="jl-admin-grid">
+    <div class="jl-admin-card"><h4>Pending</h4><div class="value" style="color:var(--jl-warn);">{{ stats.pending }}</div><div class="sub">awaiting rider</div></div>
+    <div class="jl-admin-card"><h4>In progress</h4><div class="value" style="color:#a6bcff;">{{ stats.active }}</div><div class="sub">assigned / picked up</div></div>
+    <div class="jl-admin-card"><h4>Delivered</h4><div class="value" style="color:var(--jl-accent);">{{ stats.delivered }}</div><div class="sub">completed lifetime</div></div>
+    <div class="jl-admin-card"><h4>Cancelled</h4><div class="value" style="color:var(--jl-danger);">{{ stats.cancelled }}</div><div class="sub"></div></div>
+    <div class="jl-admin-card"><h4>Verified riders</h4><div class="value">{{ stats.verified_drivers }}<span style="font-size:0.9rem; color:var(--jl-muted);">/{{ stats.drivers }}</span></div><div class="sub">{{ online_drivers|length }} online now</div></div>
+    <div class="jl-admin-card"><h4>Customers</h4><div class="value">{{ stats.customers }}</div><div class="sub">registered</div></div>
+    <div class="jl-admin-card"><h4>B2B Merchants</h4><div class="value">{{ stats.merchants }}</div><div class="sub">contracted sellers</div></div>
+    <div class="jl-admin-card"><h4>Platform revenue</h4><div class="value">£{{ '%d'|format((stats.revenue_ssp - stats.driver_payouts_ssp)|int) }}</div><div class="sub">on £{{ '%d'|format(stats.revenue_ssp|int) }} SSP gross</div></div>
+  </div>
+
+  <div class="jl-two-col">
+    <div>
+      <h3>📍 Online drivers</h3>
+      <table class="jl-table">
+        <thead><tr><th>Rider</th><th>Plate</th><th>Deliveries</th><th>Earnings</th><th>Last seen</th></tr></thead>
+        <tbody>
+        {% for d in online_drivers %}
+          <tr>
+            <td>{{ d.full_name }}<br><small style="color:var(--jl-muted);">{{ d.phone }}</small></td>
+            <td>{{ d.plate_number or '—' }}</td>
+            <td>{{ d.total_deliveries }}</td>
+            <td>£{{ '%d'|format(d.earnings_ssp|int) }}</td>
+            <td><small>{{ d.last_location_at.strftime('%H:%M') if d.last_location_at else '—' }}<br>{{ d.current_lat }},{{ d.current_lng }}</small></td>
+          </tr>
+        {% else %}
+          <tr><td colspan="5">No drivers currently on duty.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <h3>📨 Recent WhatsApp notifications</h3>
+      <div style="max-height:380px; overflow:auto;">
+      {% for n in notifications %}
+        <div class="jl-card" style="padding:10px; margin-bottom:8px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:var(--jl-muted);">
+            <span>{{ n.channel|capitalize }} · {{ n.direction }} · <b>{{ n.status }}</b></span>
+            <span>{{ n.created_at.strftime('%H:%M:%S') }}</span>
+          </div>
+          <div style="font-size:0.88rem; margin-top:4px;">To {{ n.phone }}</div>
+          <div style="font-size:0.9rem; white-space:pre-wrap;">{{ n.message[:220] }}</div>
+        </div>
+      {% else %}
+        <div class="jl-card">No notifications logged yet.</div>
+      {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:30px;">📦 Recent deliveries</h3>
+  <div style="overflow-x:auto;">
+  <table class="jl-table">
+    <thead>
+      <tr>
+        <th>Code</th><th>Status</th><th>Customer/Merchant</th><th>Recipient</th>
+        <th>Pickup → Drop-off</th><th>Distance</th><th>Fee</th><th>Rider</th><th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in recent %}
+      <tr>
+        <td><span class="jl-code">{{ d.tracking_code }}</span></td>
+        <td><span class="jl-status jl-status-{{ d.status }}">{{ d.status.replace('_',' ').upper() }}</span></td>
+        <td>{{ d.customer.name if d.customer else '—' }}{% if d.merchant %}<br><small style="color:var(--jl-primary);">{{ d.merchant.business_name }}</small>{% endif %}</td>
+        <td>{{ d.recipient_name }}<br><small style="color:var(--jl-muted);">{{ d.recipient_phone }}</small></td>
+        <td><small>{{ d.pickup_label or '—' }}<br>→ {{ d.dropoff_label or '—' }}</small></td>
+        <td>{{ d.distance_km }} km</td>
+        <td>£{{ '%d'|format(d.fee_ssp|int) }}</td>
+        <td>{{ d.driver.full_name if d.driver else '—' }}</td>
+        <td><small>{{ d.created_at.strftime('%d %b %H:%M') }}</small></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <div class="jl-card" style="margin-top:30px;">
+    <h3>🔌 B2B / Merchant API</h3>
+    <p>Instagram and Facebook sellers in Juba can book JunubLogistics deliveries straight from their Shopify, DM workflow, or custom storefront with a single JSON POST.</p>
+    <pre style="background:#0b0f1a; padding:14px; border-radius:10px; overflow:auto; color:#cfe5ff; font-size:0.85rem;">POST /logistics/api/book-merchant
+Content-Type: application/json
+
+{
+  "api_key": "jumiajuba",
+  "recipient_name": "Achol Deng",
+  "recipient_phone": "+211922123456",
+  "pickup_lat": 4.851, "pickup_lng": 31.582,
+  "pickup_label": "Jumia Juba Hub, Juba Market",
+  "dropoff_lat": 4.844, "dropoff_lng": 31.539,
+  "dropoff_label": "Gudele Block 4",
+  "dropoff_notes": "Green gate near borehole",
+  "package_size": "medium",
+  "description": "Jumia order #SS2391 — shoes"
+}</pre>
+    <p style="color:var(--jl-muted); font-size:0.85rem;">Response: <code>{ "ok":true, "tracking_code":"JL-XXXXXX", "tracking_url":"…" }</code>. The customer, merchant and rider all get WhatsApp notifications automatically.</p>
+  </div>
+</section>
+{% endblock %}

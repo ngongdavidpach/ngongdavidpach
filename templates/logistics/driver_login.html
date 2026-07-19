@@ -1,0 +1,29 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Driver login — JunubLogistics{% endblock %}
+{% block content %}
+<div class="jl-auth-wrap">
+  <div class="jl-auth-card">
+    <h2>🏍️ Driver app</h2>
+    <p style="color:var(--jl-muted); margin-top:0;">Verified boda-boda riders: log in to accept jobs, navigate with Google Maps, and track earnings.</p>
+    <form method="post">
+      <div class="jl-field">
+        <label>Phone number</label>
+        <input name="phone" required placeholder="+211922…" />
+      </div>
+      <div class="jl-field">
+        <label>Password</label>
+        <input type="password" name="password" required />
+      </div>
+      <button class="jl-btn-primary jl-btn-wide" type="submit">Log in & start accepting jobs</button>
+    </form>
+    <p style="margin-top:16px; color:var(--jl-muted); font-size:0.85rem; text-align:center;">
+      Not a rider yet? Contact JunubLogistics onboarding (WhatsApp +211 922 000 000) to register.
+    </p>
+    <p style="color:var(--jl-muted); font-size:0.85rem; text-align:center;">
+      <b>Demo logins</b> (seeded):<br>
+      +211922100001 / driver123 (Samuel · bike SS JBA 001)<br>
+      +211922100002 / driver123 (Peter · bike SS JBA 002)
+    </p>
+  </div>
+</div>
+{% endblock %}

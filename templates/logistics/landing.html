@@ -1,0 +1,109 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}JunubLogistics — Address-less Delivery in Juba{% endblock %}
+{% block content %}
+<section class="jl-hero">
+  <div>
+    <span class="jl-chip" style="background:rgba(255,122,26,0.15);color:#ffb482;border-color:rgba(255,122,26,0.3);">🏍️ Last-mile delivery · Juba</span>
+    <h1 style="margin-top:14px;">Deliver anything in Juba.<br><span class="accent">No street address required.</span></h1>
+    <p>South Sudan has no formal addressing system. We built a network of verified boda-boda riders who navigate by <b>GPS pin-drop</b>, Google Maps turn-by-turn, and WhatsApp notifications — so your parcel gets from Gudele to Juba Town without a single phone call.</p>
+    <div class="jl-hero-cta">
+      <a href="{{ url_for('logistics.customer_signup') }}" class="jl-btn-primary">🚴 Book a delivery</a>
+      <a href="{{ url_for('logistics.driver_login') }}" class="jl-btn-ghost">🏍️ I'm a rider</a>
+      <a href="{{ url_for('logistics.track') }}" class="jl-btn-ghost">📦 Track a parcel</a>
+    </div>
+    <div class="jl-stats">
+      <div class="jl-stat"><strong>{{ counts.drivers }}</strong><span>Verified riders</span></div>
+      <div class="jl-stat"><strong>{{ counts.deliveries }}</strong><span>Parcels delivered</span></div>
+      <div class="jl-stat"><strong>{{ counts.merchants }}</strong><span>B2B sellers</span></div>
+      <div class="jl-stat"><strong>24/7</strong><span>WhatsApp updates</span></div>
+    </div>
+  </div>
+  <div class="jl-hero-card">
+    <h3>📍 Drop a pin, we handle the rest</h3>
+    <div id="hero-map" class="jl-pin-visual"></div>
+    <p style="margin:12px 0 0; color: var(--jl-muted); font-size:0.9rem;">
+      Tap to set pickup → tap drop-off → get a fare instantly. Our riders use Google Maps turn-by-turn directions.
+    </p>
+  </div>
+</section>
+
+<section class="jl-section">
+  <h2>How it works</h2>
+  <div class="jl-steps">
+    <div class="jl-step"><div class="num">1</div><h3>Drop a pin</h3><p>Customer opens the app and taps the map for pickup and drop-off. No street names needed.</p></div>
+    <div class="jl-step"><div class="num">2</div><h3>Instant fare</h3><p>Distance-based pricing in SSP, shown before you confirm. Pay cash or m-Gurush on delivery.</p></div>
+    <div class="jl-step"><div class="num">3</div><h3>Nearest rider</h3><p>Job is dispatched to the closest verified boda rider in real time. Driver app shows Google Maps navigation.</p></div>
+    <div class="jl-step"><div class="num">4</div><h3>Track & confirm</h3><p>WhatsApp alerts at every step. Recipient shows a 6-digit handover PIN and the parcel is delivered — proof photo included.</p></div>
+  </div>
+</section>
+
+<section class="jl-section">
+  <h2>Why JunubLogistics?</h2>
+  <div class="jl-grid-3">
+    <div class="jl-card">
+      <div class="icon">📱</div>
+      <h3>Smartphone or not</h3>
+      <p>Book via our web app, by messaging our WhatsApp bot, or through your favourite Instagram shop — they ship via our B2B API.</p>
+    </div>
+    <div class="jl-card">
+      <div class="icon">🗺️</div>
+      <h3>Google Maps navigation</h3>
+      <p>Riders don't need to know the city. The driver app opens Google Maps turn-by-turn directly to the pin — even in the newest neighbourhoods.</p>
+    </div>
+    <div class="jl-card">
+      <div class="icon">💬</div>
+      <h3>WhatsApp updates</h3>
+      <p>Sender, recipient and merchant get live status messages and a tracking link. No more "where is my boda?" phone calls.</p>
+    </div>
+    <div class="jl-card">
+      <div class="icon">🔐</div>
+      <h3>Secure handover</h3>
+      <p>Every parcel has a unique 6-digit PIN the recipient must show. Optional proof-of-delivery photo protects sellers and buyers.</p>
+    </div>
+    <div class="jl-card">
+      <div class="icon">🏪</div>
+      <h3>Built for sellers</h3>
+      <p>Instagram/Facebook merchants on Juba's informal e-commerce scene get a simple API, a monthly bill, and a dashboard of all their deliveries.</p>
+    </div>
+    <div class="jl-card">
+      <div class="icon">💰</div>
+      <h3>Fair fares, rider-first</h3>
+      <p>Transparent distance-based pricing. 80% of every fare goes directly to the rider, with weekly mobile-money payouts.</p>
+    </div>
+  </div>
+</section>
+
+<section class="jl-section">
+  <h2>Serving Juba's landmarks</h2>
+  <p style="color:var(--jl-muted); max-width:720px; margin-bottom:8px;">No addresses? No problem. Customers can pick a well-known Juba landmark as a starting point, then fine-tune the pin.</p>
+  <div class="jl-pin-chips">
+    {% for a in pin_areas %}<span class="jl-chip">{{ a.name }}<span class="tag">{{ a.tag }}</span></span>{% endfor %}
+  </div>
+</section>
+
+<section class="jl-section" style="text-align:center;">
+  <h2>Ready to ship?</h2>
+  <p style="color:var(--jl-muted); max-width:560px; margin: 0 auto 20px;">Join South Sudan's first address-less delivery network. Book your first parcel in under a minute.</p>
+  <a class="jl-btn-primary jl-btn-wide" style="max-width:280px;" href="{{ url_for('logistics.customer_signup') }}">Sign up — it's free</a>
+</section>
+{% endblock %}
+
+{% block foot_extra %}
+<script>
+  const center = [4.8594, 31.5713];
+  const map = L.map('hero-map', { zoomControl:false, scrollWheelZoom:false, dragging:false }).setView(center, 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution:'© OpenStreetMap'
+  }).addTo(map);
+  // Sample pins
+  const pins = [
+    [4.851, 31.582, "Pickup — Juba Market"],
+    [4.872, 31.601, "Airport pickup"],
+    [4.844, 31.539, "Gudele drop-off"],
+    [4.856, 31.550, "Munuki delivery"],
+    [4.862, 31.591, "Nyakuron"],
+  ];
+  pins.forEach(([lat,lng,txt]) => L.marker([lat,lng]).addTo(map).bindPopup(txt));
+  L.Routing = {};
+</script>
+{% endblock %}

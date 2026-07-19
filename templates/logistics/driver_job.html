@@ -1,0 +1,116 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Job {{ job.tracking_code }} — JunubLogistics Driver{% endblock %}
+{% block content %}
+<section class="jl-job-detail">
+  <div>
+    <h2 style="margin-top:0;">🏍️ Job {{ job.tracking_code }} <span class="jl-status jl-status-{{ job.status }}">{{ job.status.replace('_',' ').upper() }}</span></h2>
+    <div id="job-map" class="jl-map" style="height:420px;"></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px;">
+      <div class="jl-card">
+        <h3 style="margin-top:0;">📍 Pickup</h3>
+        <p><b>{{ job.pickup_label or 'GPS pin' }}</b><br>
+        <a href="{{ pickup_nav }}" target="_blank" class="jl-btn-primary" style="margin-top:8px;">🧭 Navigate to pickup (Google Maps)</a>
+        <div style="color:var(--jl-muted); font-size:0.9rem; margin-top:10px;">{{ job.pickup_notes }}</div>
+        <div style="font-family:monospace; font-size:0.85rem; color:var(--jl-muted);">{{ job.pickup_lat }}, {{ job.pickup_lng }}</div>
+      </div>
+      <div class="jl-card">
+        <h3 style="margin-top:0;">🏁 Drop-off</h3>
+        <p><b>{{ job.recipient_name }}</b> · {{ job.recipient_phone }}<br>{{ job.dropoff_label or 'GPS pin' }}</p>
+        <a href="{{ drop_nav }}" target="_blank" class="jl-btn-accent" style="margin-top:8px;">🧭 Navigate to drop-off</a>
+        <div style="color:var(--jl-muted); font-size:0.9rem; margin-top:10px;">{{ job.dropoff_notes }}</div>
+        <div style="font-family:monospace; font-size:0.85rem; color:var(--jl-muted);">{{ job.dropoff_lat }}, {{ job.dropoff_lng }}</div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="jl-booking-panel" style="position:sticky; top:80px;">
+    <h3>Job controls</h3>
+    <div class="jl-card" style="padding:14px; margin-bottom:12px;">
+      <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Your payout</div>
+      <div style="font-size:2rem; font-weight:800; color:var(--jl-accent);">£{{ '%d'|format(job.driver_payout_ssp|int) }} SSP</div>
+      <div style="color:var(--jl-muted); font-size:0.85rem;">Distance {{ job.distance_km }} km · {{ job.package_size|capitalize }}</div>
+    </div>
+    <div class="jl-card" style="padding:14px; margin-bottom:12px;">
+      <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Handover PIN (ask recipient)</div>
+      <div class="jl-handover-pin">{{ job.handover_pin }}</div>
+      <div style="color:var(--jl-muted); font-size:0.8rem; margin-top:6px;">Recipient must show this 6-digit code. Do not deliver without it.</div>
+    </div>
+
+    <div class="jl-card" style="padding:14px; margin-bottom:12px;">
+      <div style="color:var(--jl-muted); font-size:0.85rem; text-transform:uppercase;">Parcel notes</div>
+      <div>{{ job.description or '—' }}</div>
+      <div style="color:var(--jl-muted); font-size:0.85rem; margin-top:6px;">Recipient: <b>{{ job.recipient_name }}</b><br>Call: <a href="tel:{{ job.recipient_phone }}">{{ job.recipient_phone }}</a></div>
+      {% if job.customer %}
+      <div style="color:var(--jl-muted); font-size:0.85rem; margin-top:6px;">Sender: {{ job.customer.name }} · <a href="tel:{{ job.customer.phone }}">{{ job.customer.phone }}</a></div>
+      {% endif %}
+    </div>
+
+    {% if job.status == 'pending' %}
+      <button class="jl-btn-primary jl-btn-wide" id="btn-accept" data-jid="{{ job.id }}">✅ Accept this job</button>
+    {% elif job.status == 'assigned' %}
+      <button class="jl-btn-primary jl-btn-wide" id="btn-pickup" data-jid="{{ job.id }}">📦 Mark as picked up</button>
+    {% elif job.status == 'picked_up' %}
+      <div class="jl-field">
+        <label>Enter 6-digit handover PIN from recipient</label>
+        <input id="pin-input" maxlength="6" placeholder="123456" />
+      </div>
+      <div class="jl-field">
+        <label>Optional photo proof</label>
+        <input type="file" id="photo-input" accept="image/*" capture="environment" />
+      </div>
+      <button class="jl-btn-accent jl-btn-wide" id="btn-deliver" data-jid="{{ job.id }}">🎉 Complete delivery</button>
+    {% elif job.status == 'delivered' %}
+      <div class="jl-card" style="padding:14px; background: rgba(25,179,114,0.12); border-color: rgba(25,179,114,0.3);">
+        ✅ Delivered at {{ job.delivered_at.strftime('%d %b %H:%M') if job.delivered_at else '' }}. Earnings added to your balance.
+      </div>
+    {% endif %}
+    <p style="margin-top:14px;"><a href="{{ url_for('logistics.driver_dashboard') }}">← Back to dashboard</a></p>
+  </aside>
+</section>
+{% endblock %}
+
+{% block foot_extra %}
+<script>
+(function(){
+  const p = [{{ job.pickup_lat }}, {{ job.pickup_lng }}];
+  const d = [{{ job.dropoff_lat }}, {{ job.dropoff_lng }}];
+  const map = L.map('job-map').setView([(p[0]+d[0])/2,(p[1]+d[1])/2], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+  const pI = L.divIcon({className:'',html:'<div style="background:#ff7a1a;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;"></div>',iconSize:[28,28],iconAnchor:[14,28]});
+  const dI = L.divIcon({className:'',html:'<div style="background:#19b372;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;"></div>',iconSize:[28,28],iconAnchor:[14,28]});
+  L.marker(p,{icon:pI}).addTo(map).bindPopup('Pickup');
+  L.marker(d,{icon:dI}).addTo(map).bindPopup('Drop-off');
+  L.polyline([p,d],{color:'#ff7a1a',weight:4,dashArray:'6 8'}).addTo(map);
+
+  async function postForm(url, fd){
+    const r = await fetch(url,{method:'POST', body: fd});
+    return r.json();
+  }
+  const accept = document.getElementById('btn-accept');
+  if (accept) accept.onclick = async () => {
+    accept.disabled = true; accept.textContent='Accepting…';
+    const fd = new FormData();
+    const j = await postForm('/logistics/api/accept/'+accept.dataset.jid, fd);
+    if (j.ok) location.reload(); else { alert(j.error); accept.disabled=false; accept.textContent='✅ Accept this job'; }
+  };
+  const pu = document.getElementById('btn-pickup');
+  if (pu) pu.onclick = async () => {
+    pu.disabled = true; pu.textContent='Updating…';
+    const j = await postForm('/logistics/api/pickup/'+pu.dataset.jid, new FormData());
+    if (j.ok) location.reload(); else { alert(j.error); pu.disabled=false; }
+  };
+  const dl = document.getElementById('btn-deliver');
+  if (dl) dl.onclick = async () => {
+    const pin = document.getElementById('pin-input').value.trim();
+    if (pin.length !== 6) { alert('Please enter the 6-digit handover PIN.'); return; }
+    dl.disabled = true; dl.textContent='Submitting…';
+    const fd = new FormData();
+    fd.append('pin', pin);
+    const photo = document.getElementById('photo-input').files[0];
+    if (photo) fd.append('photo', photo);
+    const j = await postForm('/logistics/api/deliver/'+dl.dataset.jid, fd);
+    if (j.ok) location.reload(); else { alert(j.error || 'Could not complete.'); dl.disabled=false; dl.textContent='🎉 Complete delivery'; }
+  };
+})();
+</script>
+{% endblock %}

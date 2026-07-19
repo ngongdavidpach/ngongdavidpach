@@ -1,0 +1,37 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}Sign up — JunubLogistics{% endblock %}
+{% block content %}
+<div class="jl-auth-wrap">
+  <div class="jl-auth-card">
+    <h2>📱 Create your JunubLogistics account</h2>
+    <p style="color:var(--jl-muted); margin-top:0;">Book address-less deliveries across Juba. Receive WhatsApp updates at every step.</p>
+    <form method="post">
+      <div class="jl-field">
+        <label>Full name</label>
+        <input name="name" required placeholder="e.g. Achol Deng" />
+      </div>
+      <div class="jl-field-row">
+        <div class="jl-field">
+          <label>Phone number (+211…)</label>
+          <input name="phone" required placeholder="+211922123456" />
+        </div>
+        <div class="jl-field">
+          <label>WhatsApp (if different)</label>
+          <input name="whatsapp_phone" placeholder="+211922…" />
+        </div>
+      </div>
+      <div class="jl-field">
+        <label>Password</label>
+        <input type="password" name="password" required minlength="6" />
+      </div>
+      <button class="jl-btn-primary jl-btn-wide" type="submit">Create account & book my first delivery</button>
+    </form>
+    <p style="margin-top:16px; color:var(--jl-muted); text-align:center;">
+      Already have an account? <a href="{{ url_for('logistics.customer_login') }}">Log in</a>
+    </p>
+    <p style="margin-top:12px; color:var(--jl-muted); font-size:0.85rem; text-align:center;">
+      Are you a rider? <a href="{{ url_for('logistics.driver_login') }}">Log into the driver app</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

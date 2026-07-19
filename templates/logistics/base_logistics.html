@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>{% block title %}JunubLogistics — Address-less Delivery{% endblock %}</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('logistics.static', filename='css/logistics.css') }}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <header class="jl-nav">
+    <a href="{{ url_for('logistics.landing') }}" class="jl-brand">
+      <span class="jl-logo">🏍️</span>
+      <span>Junub<b>Logistics</b></span>
+    </a>
+    <nav class="jl-nav-links">
+      <a href="{{ url_for('logistics.landing') }}">Home</a>
+      <a href="{{ url_for('logistics.track') }}">Track</a>
+      {% if current_user.is_authenticated and current_user.__class__.__name__ == 'LCustomer' %}
+        <a href="{{ url_for('logistics.book') }}">Book</a>
+        <a href="{{ url_for('logistics.my_deliveries') }}">My Deliveries</a>
+        <a href="{{ url_for('logistics.customer_logout') }}" class="jl-btn-ghost">Log out</a>
+      {% elif current_user.is_authenticated and current_user.__class__.__name__ == 'LDriver' %}
+        <a href="{{ url_for('logistics.driver_dashboard') }}">Driver Dashboard</a>
+        <a href="{{ url_for('logistics.driver_logout') }}" class="jl-btn-ghost">Log out</a>
+      {% else %}
+        <a href="{{ url_for('logistics.customer_login') }}">Customer</a>
+        <a href="{{ url_for('logistics.driver_login') }}">Driver</a>
+        <a href="{{ url_for('logistics.customer_signup') }}" class="jl-btn-primary">Sign up</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="jl-flashes">
+      {% for cat, m in messages %}
+        <div class="jl-flash jl-flash-{{ cat }}">{{ m }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="jl-footer">
+    <p>© 2026 JunubLogistics · Built for Juba, South Sudan · GPS pin-drop last-mile delivery</p>
+    <p><a href="{{ url_for('logistics.admin') }}">Admin</a></p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="{{ url_for('logistics.static', filename='js/logistics.js') }}"></script>
+  {% block foot_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,44 @@
+{% extends "logistics/base_logistics.html" %}
+{% block title %}My deliveries — JunubLogistics{% endblock %}
+{% block content %}
+<section class="jl-list">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+    <h2 style="margin:0;">📦 My deliveries</h2>
+    <a class="jl-btn-primary" href="{{ url_for('logistics.book') }}">+ New delivery</a>
+  </div>
+  {% if not deliveries %}
+    <div class="jl-card">
+      <p>You haven't booked any deliveries yet.</p>
+      <a class="jl-btn-primary" href="{{ url_for('logistics.book') }}">Book your first delivery →</a>
+    </div>
+  {% endif %}
+  {% for d in deliveries %}
+    <div class="jl-delivery-card">
+      <div>
+        <div class="jl-code">{{ d.tracking_code }}</div>
+        <div class="jl-status jl-status-{{ d.status }}">{{ d.status.replace('_',' ').upper() }}</div>
+      </div>
+      <div>
+        <div><b>{{ d.recipient_name }}</b> · {{ d.recipient_phone }}</div>
+        <div style="color:var(--jl-muted); font-size:0.9rem;">
+          📍 {{ d.pickup_label or d.pickup_notes or 'Pickup pin' }} → {{ d.dropoff_label or d.dropoff_notes or 'Drop-off pin' }}
+        </div>
+        <div style="color:var(--jl-muted); font-size:0.85rem;">
+          {{ d.distance_km or 0 }} km · £{{ '%d'|format(d.fee_ssp|int) }} SSP · {{ d.package_size }} · booked {{ d.created_at.strftime('%d %b %H:%M') }}
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-end;">
+        <a class="jl-btn-ghost" href="{{ url_for('logistics.track', code=d.tracking_code) }}">Live track</a>
+        {% if d.status in ['pending','assigned'] %}
+          <form method="post" action="{{ url_for('logistics.api_cancel', did=d.id) }}">
+            <button class="jl-btn-danger" onclick="return confirm('Cancel this delivery?');">Cancel</button>
+          </form>
+        {% endif %}
+        {% if d.handover_pin %}
+          <div style="color:var(--jl-warn); font-family:monospace; font-weight:700;">PIN {{ d.handover_pin }}</div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</section>
+{% endblock %}

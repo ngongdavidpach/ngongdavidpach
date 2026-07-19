@@ -275,4 +275,5 @@ Contributions welcome! Areas of focus:
 | Project | Folder / Stack | Idea |
 |---|---|---|
 | 🏠 **PropTech — Verified Rental Listings** | [`proptech/`](proptech/) · static HTML/CSS/JS | Killing Juba's rental scams: every house/land listing is physically verified by a field agent (GPS + timestamped photos) before it earns a badge. Revenue: $25 verification fee + 5% success commission. |
+| 🏍️ **JunubLogistics — Address-less Delivery** | [`logistics/`](logistics/) · Flask + Leaflet/OpenStreetMap + Google Maps deeplinks + WhatsApp Cloud API | Last-mile delivery across Juba without street addresses. Customers drop a pin, verified boda-boda riders navigate via Google Maps coordinates, WhatsApp drives the whole notification loop. Revenue: per-parcel delivery fees + B2B contracts with Instagram/Facebook sellers. See [`logistics/README_logistics.md`](logistics/README_logistics.md). |
 | 💸 **Junub Pay** | [`src/`](src/) · Next.js 14 | Diaspora remittance & direct bill-payment corridor for South Sudan. |

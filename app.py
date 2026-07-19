@@ -41,9 +41,11 @@ def create_app(config_name=None):
     # ── Register blueprints ───────────────────────────────────────
     from api import api_bp, template_defaults
     from whatsapp_bot import whatsapp_bp
+    from logistics import logistics_bp
 
     app.register_blueprint(api_bp)
     app.register_blueprint(whatsapp_bp)
+    app.register_blueprint(logistics_bp)
 
     # Register template context processors
     app.context_processor(template_defaults)
