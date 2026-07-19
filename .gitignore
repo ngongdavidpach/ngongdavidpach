@@ -1,35 +1,36 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# Virtual environment
+.venv/
+venv/
+env/
 
-# next.js
-/.next/
-/out/
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 
-# production
-/build
+# Database
+*.db
+*.sqlite3
 
-# misc
-.DS_Store
-*.pem
+# IDE
+.vscode/
+.idea/
 
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
+# Environment
 .env
+.env.local
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
 
-# junub pay local data (seeded DB is regenerated via `npm run seed`)
-/data/*.json
-/data/*.json.tmp
-/data/*.db
-/data/*.db-journal
-/data/
+# Distribution
+dist/
+build/
+*.egg-info/
+
+# OS
+.DS_Store
+Thumbs.db

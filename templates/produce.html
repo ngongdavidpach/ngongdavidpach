@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Browse Produce{% endblock %}
+{% block page_title %}Browse Produce{% endblock %}
+
+{% block content %}
+<!-- Filters -->
+<div class="card filter-card">
+    <form method="GET" class="filter-form">
+        <div class="filter-row">
+            <div class="filter-group">
+                <label><i class="fas fa-search"></i> Crop</label>
+                <select name="crop" onchange="this.form.submit()">
+                    <option value="">All Crops</option>
+                    {% for c in crops %}
+                    <option value="{{ c }}" {% if selected_crop == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt"></i> County</label>
+                <select name="county" onchange="this.form.submit()">
+                    <option value="">All Counties</option>
+                    {% for c in counties %}
+                    <option value="{{ c }}" {% if selected_county == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-star"></i> Quality</label>
+                <select name="quality" onchange="this.form.submit()">
+                    <option value="">All Grades</option>
+                    <option value="premium" {% if selected_quality == 'premium' %}selected{% endif %}>Premium</option>
+                    <option value="standard" {% if selected_quality == 'standard' %}selected{% endif %}>Standard</option>
+                    <option value="fair" {% if selected_quality == 'fair' %}selected{% endif %}>Fair</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-sort"></i> Sort By</label>
+                <select name="sort" onchange="this.form.submit()">
+                    <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="price_low" {% if selected_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if selected_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="quantity" {% if selected_sort == 'quantity' %}selected{% endif %}>Quantity: Most First</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Results -->
+<div class="results-header">
+    <span class="results-count">{{ listings|length }} listing{{ 's' if listings|length != 1 }} found</span>
+</div>
+
+{% if listings %}
+<div class="listing-grid">
+    {% for listing in listings %}
+    <div class="listing-card" onclick="window.location='{{ url_for('api.produce_detail', listing_id=listing.id) }}'">
+        <div class="listing-card-top">
+            <div class="listing-emoji-lg">
+                {{ {'Maize': '🌽', 'Sorghum': '🌾', 'Cassava': '🥔', 'Tomato': '🍅', 'Onion': '🧅', 'Beans': '🫘', 'Mango': '🥭', 'Banana': '🍌', 'Rice': '🍚', 'Okra': '🥒', 'Spinach': '🥬', 'Groundnut': '🥜', 'Sesame': '🫘', 'Millet': '🌾', 'Sweet Potato': '🍠', 'Cabbage': '🥬'}.get(listing.crop_name, '🌿') }}
+            </div>
+            <span class="listing-badge quality-{{ listing.quality_grade }}">{{ listing.quality_grade }}</span>
+        </div>
+        <div class="listing-card-body">
+            <h3>{{ listing.crop_name }}</h3>
+            <div class="listing-stats">
+                <div class="listing-stat">
+                    <i class="fas fa-weight-hanging"></i>
+                    <span>{{ "%.0f"|format(listing.quantity_kg) }} kg</span>
+                </div>
+                <div class="listing-stat">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>{{ currency(listing.unit_price_ssp) }}/kg</span>
+                </div>
+            </div>
+            <div class="listing-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ listing.pickup_location or 'N/A' }}</span>
+            </div>
+            <div class="listing-meta">
+                <span><i class="far fa-clock"></i> {{ time_ago(listing.created_at) }}</span>
+                <span><i class="fas fa-user"></i> {{ listing.farmer.name if listing.farmer else 'Unknown' }}</span>
+            </div>
+        </div>
+        <div class="listing-card-footer">
+            <span class="listing-total">Total: {{ currency(listing.total_value_ssp) }}</span>
+            <span class="listing-cta">View Details <i class="fas fa-arrow-right"></i></span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-seedling"></i>
+    <h3>No produce found</h3>
+    <p>Try adjusting your filters or check back later.</p>
+</div>
+{% endif %}
+{% endblock %}

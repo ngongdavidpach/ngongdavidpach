@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Farmers Directory{% endblock %}
+{% block page_title %}Farmers Directory{% endblock %}
+
+{% block content %}
+<!-- Search & Filter -->
+<div class="card filter-card">
+    <form method="GET" class="filter-form">
+        <div class="filter-row">
+            <div class="filter-group filter-group-grow">
+                <label><i class="fas fa-search"></i> Search</label>
+                <input type="text" name="search" value="{{ search }}" placeholder="Search by name or location...">
+            </div>
+            <div class="filter-group">
+                <label><i class="fas fa-map-marker-alt"></i> County</label>
+                <select name="county" onchange="this.form.submit()">
+                    <option value="">All Counties</option>
+                    {% for c in counties %}
+                    <option value="{{ c }}" {% if selected_county == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group" style="align-self: flex-end;">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Search</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="results-header">
+    <span class="results-count">{{ farmers|length }} farmer{{ 's' if farmers|length != 1 }} registered</span>
+</div>
+
+{% if farmers %}
+<div class="farmers-grid">
+    {% for farmer in farmers %}
+    <div class="farmer-card">
+        <div class="farmer-card-header">
+            <div class="farmer-avatar-lg">{{ farmer.name[0] }}</div>
+            <div class="farmer-card-info">
+                <h3>{{ farmer.name }}</h3>
+                <p class="farmer-location"><i class="fas fa-map-marker-alt"></i> {{ farmer.location }}, {{ farmer.county }}</p>
+            </div>
+        </div>
+        <div class="farmer-card-stats">
+            <div class="farmer-stat">
+                <span class="farmer-stat-value">{{ farmer.active_listings|length }}</span>
+                <span class="farmer-stat-label">Active Listings</span>
+            </div>
+            <div class="farmer-stat">
+                <span class="farmer-stat-value">{{ "%.0f"|format(farmer.total_harvest_kg) }}</span>
+                <span class="farmer-stat-label">Total kg Available</span>
+            </div>
+        </div>
+        {% if farmer.active_listings %}
+        <div class="farmer-card-listings">
+            {% for listing in farmer.active_listings[:3] %}
+            <a href="{{ url_for('api.produce_detail', listing_id=listing.id) }}" class="farmer-listing-tag">
+                {{ listing.crop_name }} · {{ "%.0f"|format(listing.quantity_kg) }}kg
+            </a>
+            {% endfor %}
+            {% if farmer.active_listings|length > 3 %}
+            <span class="farmer-listing-more">+{{ farmer.active_listings|length - 3 }} more</span>
+            {% endif %}
+        </div>
+        {% endif %}
+        <div class="farmer-card-footer">
+            <span><i class="fas fa-phone"></i> {{ farmer.phone }}</span>
+            <span><i class="fas fa-calendar"></i> Joined {{ fdate_short(farmer.registered_at) }}</span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-users"></i>
+    <h3>No farmers found</h3>
+    <p>Try adjusting your search or filters.</p>
+</div>
+{% endif %}
+{% endblock %}

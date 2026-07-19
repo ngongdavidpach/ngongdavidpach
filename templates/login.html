@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block page_title %}Login{% endblock %}
+
+{% block public_content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">
+                <span class="logo-icon-lg">🌾</span>
+                <h1>AgriConnect</h1>
+                <p class="auth-subtitle">Farm-to-Market Marketplace · South Sudan</p>
+            </div>
+        </div>
+
+        <!-- Tab Toggle -->
+        <div class="auth-tabs">
+            <button class="auth-tab {% if not register_mode %}active{% endif %}" onclick="showTab('login')">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+            <button class="auth-tab {% if register_mode %}active{% endif %}" onclick="showTab('register')">
+                <i class="fas fa-user-plus"></i> Register
+            </button>
+        </div>
+
+        <!-- Login Form -->
+        <form method="POST" action="{{ url_for('api.login') }}" class="auth-form" id="loginForm"
+              style="{% if register_mode %}display:none{% endif %}">
+            <div class="form-group">
+                <label for="login-email"><i class="fas fa-envelope"></i> Email</label>
+                <input type="email" id="login-email" name="email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="login-password" name="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </button>
+        </form>
+
+        <!-- Register Form -->
+        <form method="POST" action="{{ url_for('api.register') }}" class="auth-form" id="registerForm"
+              style="{% if not register_mode %}display:none{% endif %}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reg-name"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="reg-name" name="name" placeholder="John Maker" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-type"><i class="fas fa-building"></i> Buyer Type</label>
+                    <select id="reg-type" name="buyer_type" required>
+                        <option value="ngo">NGO / Aid Organization</option>
+                        <option value="restaurant">Restaurant / Hotel</option>
+                        <option value="wholesaler">Wholesaler / Distributor</option>
+                        <option value="individual">Individual Buyer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="reg-org"><i class="fas fa-briefcase"></i> Organization (Optional)</label>
+                <input type="text" id="reg-org" name="organization" placeholder="Company or NGO name">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reg-email"><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="reg-email" name="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-phone"><i class="fas fa-phone"></i> Phone</label>
+                    <input type="tel" id="reg-phone" name="phone" placeholder="+211 912 345 678" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reg-location"><i class="fas fa-map-marker-alt"></i> Location</label>
+                    <input type="text" id="reg-location" name="location" value="Juba" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="reg-password" name="password" placeholder="Min 6 characters" required minlength="6">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <div class="demo-credentials">
+                <p><strong>🔑 Demo Credentials:</strong></p>
+                <code>james.maker@wfp.org / demo123</code><br>
+                <code>amina@jubapalace.com / demo123</code>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-hero">
+        <h2>Connecting South Sudan's<br>Farmers to Markets</h2>
+        <p>Browse fresh produce from <strong>{{ total_farmers or '100+' }}</strong> verified farmers across all 10 states. Place orders directly and support local agriculture.</p>
+        <div class="hero-features">
+            <div class="hero-feature">
+                <i class="fas fa-sms"></i>
+                <span>SMS & USSD for Farmers</span>
+            </div>
+            <div class="hero-feature">
+                <i class="fas fa-truck"></i>
+                <span>Direct Farm to Market</span>
+            </div>
+            <div class="hero-feature">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp Bot Available</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tab) {
+    document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    document.querySelectorAll('.auth-tab').forEach((el, i) => {
+        el.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+}
+</script>
+{% endblock %}
