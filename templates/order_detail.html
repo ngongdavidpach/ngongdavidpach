@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }}{% endblock %}
+{% block page_title %}Order {{ order.order_number }}{% endblock %}
+
+{% block content %}
+<div class="detail-grid">
+    <div class="detail-main">
+        <!-- Order Status Timeline -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-route"></i> Order Progress</h2>
+            </div>
+            <div class="card-body">
+                <div class="order-timeline">
+                    {% set steps = [
+                        ('pending', 'Order Placed', order.created_at, 'fas fa-clipboard-list'),
+                        ('confirmed', 'Confirmed', order.confirmed_at, 'fas fa-check-circle'),
+                        ('in_transit', 'In Transit', None, 'fas fa-truck'),
+                        ('delivered', 'Delivered', order.delivered_at, 'fas fa-box-open'),
+                    ] %}
+                    {% set status_order = ['pending', 'confirmed', 'in_transit', 'delivered'] %}
+                    {% set current_idx = status_order.index(order.status) if order.status in status_order else 0 %}
+
+                    {% for status, label, timestamp, icon in steps %}
+                    {% set step_idx = loop.index0 %}
+                    <div class="timeline-step {% if step_idx <= current_idx %}completed{% endif %} {% if step_idx == current_idx %}current{% endif %}">
+                        <div class="timeline-icon">
+                            <i class="{{ icon }}"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <strong>{{ label }}</strong>
+                            {% if timestamp %}
+                            <small>{{ fdate(timestamp) }}</small>
+                            {% elif step_idx > current_idx %}
+                            <small>Pending</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-box"></i> Order Items</h2>
+            </div>
+            <div class="card-body">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Produce</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Subtotal</th>
+                            <th>Farmer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all() %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('api.produce_detail', listing_id=item.listing_id) }}">
+                                    {{ item.listing.crop_name }}
+                                </a>
+                            </td>
+                            <td>{{ "%.0f"|format(item.quantity_kg) }} kg</td>
+                            <td>{{ currency(item.unit_price_ssp) }}/kg</td>
+                            <td><strong>{{ currency(item.subtotal) }}</strong></td>
+                            <td>{{ item.listing.farmer.name if item.listing.farmer else 'N/A' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="text-align:right"><strong>Total:</strong></td>
+                            <td><strong class="text-lg">{{ currency(order.total_amount_ssp) }}</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-sidebar">
+        <!-- Order Info -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-info-circle"></i> Order Info</h2>
+            </div>
+            <div class="card-body">
+                <div class="info-list">
+                    <div class="info-row">
+                        <span>Order Number</span>
+                        <strong>{{ order.order_number }}</strong>
+                    </div>
+                    <div class="info-row">
+                        <span>Status</span>
+                        <span class="status-badge status-{{ order.status }}">{{ order.status.replace('_', ' ').title() }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Placed</span>
+                        <span>{{ fdate(order.created_at) }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Delivery To</span>
+                        <span>{{ order.delivery_address or 'N/A' }}</span>
+                    </div>
+                    {% if order.notes %}
+                    <div class="info-row">
+                        <span>Notes</span>
+                        <span>{{ order.notes }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

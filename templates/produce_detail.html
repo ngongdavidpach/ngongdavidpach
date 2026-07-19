@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% block title %}{{ listing.crop_name }} - Produce Details{% endblock %}
+{% block page_title %}{{ listing.crop_name }}{% endblock %}
+
+{% block content %}
+<div class="detail-grid">
+    <!-- Main Detail -->
+    <div class="detail-main">
+        <div class="card">
+            <div class="detail-header">
+                <div class="detail-emoji">
+                    {{ {'Maize': '🌽', 'Sorghum': '🌾', 'Cassava': '🥔', 'Tomato': '🍅', 'Onion': '🧅', 'Beans': '🫘', 'Mango': '🥭', 'Banana': '🍌', 'Rice': '🍚', 'Okra': '🥒', 'Spinach': '🥬', 'Groundnut': '🥜', 'Sesame': '🫘', 'Millet': '🌾', 'Sweet Potato': '🍠', 'Cabbage': '🥬'}.get(listing.crop_name, '🌿') }}
+                </div>
+                <div class="detail-title">
+                    <h2>{{ listing.crop_name }}</h2>
+                    <span class="listing-badge quality-{{ listing.quality_grade }}">{{ listing.quality_grade }} quality</span>
+                </div>
+            </div>
+
+            <div class="detail-stats">
+                <div class="detail-stat">
+                    <span class="detail-stat-label">Available</span>
+                    <span class="detail-stat-value">{{ "%.0f"|format(listing.quantity_kg) }} kg</span>
+                </div>
+                <div class="detail-stat">
+                    <span class="detail-stat-label">Price per kg</span>
+                    <span class="detail-stat-value">{{ currency(listing.unit_price_ssp) }}</span>
+                </div>
+                <div class="detail-stat">
+                    <span class="detail-stat-label">Total Value</span>
+                    <span class="detail-stat-value highlight">{{ currency(listing.total_value_ssp) }}</span>
+                </div>
+            </div>
+
+            <div class="detail-info">
+                <div class="detail-info-row">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span><strong>Pickup Location:</strong> {{ listing.pickup_location or 'Contact farmer' }}</span>
+                </div>
+                <div class="detail-info-row">
+                    <i class="fas fa-calendar"></i>
+                    <span><strong>Listed:</strong> {{ fdate(listing.created_at) }}</span>
+                </div>
+                {% if listing.harvest_date %}
+                <div class="detail-info-row">
+                    <i class="fas fa-leaf"></i>
+                    <span><strong>Harvest Date:</strong> {{ fdate_short(listing.harvest_date) }}</span>
+                </div>
+                {% endif %}
+                <div class="detail-info-row">
+                    <i class="fas fa-truck"></i>
+                    <span><strong>Delivery:</strong> {{ 'Available' if listing.delivery_available else 'Pickup only' }}</span>
+                </div>
+                {% if listing.description %}
+                <div class="detail-info-row">
+                    <i class="fas fa-info-circle"></i>
+                    <span>{{ listing.description }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if related %}
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-th-large"></i> More {{ listing.crop_name }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="related-grid">
+                    {% for r in related %}
+                    <a href="{{ url_for('api.produce_detail', listing_id=r.id) }}" class="related-card">
+                        <strong>{{ "%.0f"|format(r.quantity_kg) }}kg</strong>
+                        <span>{{ currency(r.unit_price_ssp) }}/kg</span>
+                        <small>{{ r.pickup_location }}</small>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="detail-sidebar">
+        <!-- Farmer Info -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-user"></i> Farmer</h2>
+            </div>
+            <div class="card-body">
+                <div class="farmer-profile">
+                    <div class="farmer-avatar">{{ farmer.name[0] if farmer else '?' }}</div>
+                    <div class="farmer-details">
+                        <h3>{{ farmer.name if farmer else 'Unknown' }}</h3>
+                        <p><i class="fas fa-map-marker-alt"></i> {{ farmer.location if farmer else 'N/A' }}, {{ farmer.county if farmer else '' }}</p>
+                        <p><i class="fas fa-phone"></i> {{ farmer.phone if farmer else 'N/A' }}</p>
+                        <p><i class="fas fa-calendar"></i> Member since {{ fdate_short(farmer.registered_at) if farmer else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Form -->
+        <div class="card card-highlight">
+            <div class="card-header">
+                <h2><i class="fas fa-shopping-cart"></i> Place Order</h2>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('api.create_order') }}">
+                    <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                    <div class="form-group">
+                        <label>Quantity (kg)</label>
+                        <input type="number" name="quantity" min="1" max="{{ listing.quantity_kg|int }}"
+                               value="{{ listing.quantity_kg|int }}" required
+                               class="order-qty-input" id="orderQty"
+                               oninput="updateTotal()">
+                        <small>Max: {{ "%.0f"|format(listing.quantity_kg) }} kg available</small>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-row">
+                            <span>Price per kg:</span>
+                            <span>{{ currency(listing.unit_price_ssp) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Quantity:</span>
+                            <span id="summaryQty">{{ "%.0f"|format(listing.quantity_kg) }} kg</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Total:</span>
+                            <span id="summaryTotal">{{ currency(listing.total_value_ssp) }}</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Delivery Address</label>
+                        <input type="text" name="delivery_address" placeholder="Juba, South Sudan"
+                               value="{{ current_user.location }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes (Optional)</label>
+                        <textarea name="notes" rows="2" placeholder="Special instructions..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        <i class="fas fa-shopping-cart"></i> Place Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const pricePerKg = {{ listing.unit_price_ssp }};
+const maxQty = {{ listing.quantity_kg }};
+const currencySymbol = '£';
+
+function updateTotal() {
+    const qty = parseFloat(document.getElementById('orderQty').value) || 0;
+    const total = qty * pricePerKg;
+    document.getElementById('summaryQty').textContent = qty.toFixed(0) + ' kg';
+    document.getElementById('summaryTotal').textContent = currencySymbol + total.toLocaleString('en', {maximumFractionDigits: 0}) + ' SSP';
+}
+</script>
+{% endblock %}

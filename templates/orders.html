@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}My Orders{% endblock %}
+{% block page_title %}My Orders{% endblock %}
+
+{% block content %}
+<!-- Status Filter -->
+<div class="filter-tabs">
+    <a href="{{ url_for('api.orders_list') }}" class="filter-tab {% if not selected_status %}active{% endif %}">
+        All Orders
+    </a>
+    <a href="{{ url_for('api.orders_list', status='pending') }}" class="filter-tab {% if selected_status == 'pending' %}active{% endif %}">
+        <span class="status-dot pending"></span> Pending
+    </a>
+    <a href="{{ url_for('api.orders_list', status='confirmed') }}" class="filter-tab {% if selected_status == 'confirmed' %}active{% endif %}">
+        <span class="status-dot confirmed"></span> Confirmed
+    </a>
+    <a href="{{ url_for('api.orders_list', status='in_transit') }}" class="filter-tab {% if selected_status == 'in_transit' %}active{% endif %}">
+        <span class="status-dot in_transit"></span> In Transit
+    </a>
+    <a href="{{ url_for('api.orders_list', status='delivered') }}" class="filter-tab {% if selected_status == 'delivered' %}active{% endif %}">
+        <span class="status-dot delivered"></span> Delivered
+    </a>
+</div>
+
+{% if orders %}
+<div class="orders-table-wrapper">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Items</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr onclick="window.location='{{ url_for('api.order_detail', order_id=order.id) }}'" style="cursor:pointer">
+                <td><strong>{{ order.order_number }}</strong></td>
+                <td>
+                    {% for item in order.items.all() %}
+                        {{ item.listing.crop_name }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% set total_qty = [] %}
+                    {% for item in order.items.all() %}
+                        {% if total_qty.append(item.quantity_kg) %}{% endif %}
+                    {% endfor %}
+                    {{ "%.0f"|format(total_qty|sum) }} kg
+                </td>
+                <td><strong>{{ currency(order.total_amount_ssp) }}</strong></td>
+                <td><span class="status-badge status-{{ order.status }}">{{ order.status.replace('_', ' ').title() }}</span></td>
+                <td>{{ time_ago(order.created_at) }}</td>
+                <td><i class="fas fa-chevron-right text-muted"></i></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-shopping-cart"></i>
+    <h3>No orders found</h3>
+    <p>{% if selected_status %}No {{ selected_status }} orders. {% endif %}<a href="{{ url_for('api.produce_list') }}">Browse produce</a> to place your first order.</p>
+</div>
+{% endif %}
+{% endblock %}
