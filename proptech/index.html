@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropTech Juba — Verified Rental Listings &amp; Land, Inspected in Person</title>
+<meta name="description" content="Finding housing in Juba without the scams. Every PropTech listing — house, apartment, room or plot — is physically inspected by a field agent with GPS-tagged photos before it gets the Verified badge.">
+<meta property="og:title" content="PropTech Juba — Homes you can trust, verified in person">
+<meta property="og:description" content="Verified rental listings &amp; land in Juba, South Sudan. Agents physically inspect every property: GPS match, timestamped photos, documents check.">
+<meta property="og:image" content="assets/hero-juba.jpg">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%230e7a6c'/%3E%3Cpath d='M9 19.5 20 10l11 9.5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M12 18.5V31h16V18.5' stroke='%23fff' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M17 24l2.2 2.2L24 21.5' stroke='%235eead4' stroke-width='2.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ header ============ -->
+<header class="site-header">
+  <div class="container header-in">
+    <a class="brand" href="index.html" aria-label="PropTech home">
+      <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <rect width="40" height="40" rx="10" fill="#0e7a6c"/>
+        <path d="M9 19.5 20 10l11 9.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 18.5V31h16V18.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M17 24l2.2 2.2L24 21.5" stroke="#5eead4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand__name">PropTech<em>JUBA</em></span>
+    </a>
+    <nav class="site-nav" id="siteNav" aria-label="Main navigation">
+      <a href="index.html" class="active">Home</a>
+      <a href="listings.html">Browse Homes</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="agents.html">Field Agents</a>
+      <a class="btn btn-primary btn-sm nav-cta" href="list-property.html">List a property</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+<!-- ============ hero ============ -->
+<section class="hero">
+  <div class="hero__bg"><img src="assets/hero-juba.jpg" alt="Aerial view of Juba, South Sudan at golden hour"></div>
+  <div class="container">
+    <div class="hero__in">
+      <span class="hero__eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.5-3 7.9-7 9.7-4-1.8-7-5.2-7-9.7V5.6L12 3z"/><path d="M9.2 11.8l2 2 3.8-4.2"/></svg>
+        Juba’s verified rental &amp; land platform
+      </span>
+      <h1>Homes you can trust.<br><span class="hl">Verified in person.</span></h1>
+      <p class="hero__lead">Housing in Juba moves on word-of-mouth — and scams move faster. PropTech changes that: <strong>a field agent physically inspects every listing</strong>, captures GPS and timestamped photos on site, and only then does it earn the green Verified badge.</p>
+
+      <form class="search-card" id="heroSearch" role="search" aria-label="Search verified homes">
+        <div class="field">
+          <label for="hsArea">Neighbourhood</label>
+          <select class="input" id="hsArea">
+            <option value="">Anywhere in Juba</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hsType">Property type</label>
+          <select class="input" id="hsType">
+            <option value="">Any type</option>
+            <option value="house">House</option>
+            <option value="apartment">Apartment</option>
+            <option value="room">Room</option>
+            <option value="commercial">Commercial</option>
+            <option value="land">Land</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hsLt">Rent or buy</label>
+          <select class="input" id="hsLt">
+            <option value="">Rent or buy</option>
+            <option value="rent">For rent</option>
+            <option value="sale">Land / for sale</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="hsMax">Max budget (USD)</label>
+          <select class="input" id="hsMax">
+            <option value="">No limit</option>
+            <option value="200">$200 / mo</option>
+            <option value="500">$500 / mo</option>
+            <option value="1000">$1,000 / mo</option>
+            <option value="2000">$2,000 / mo</option>
+            <option value="20000">$20,000 (buy)</option>
+            <option value="60000">$60,000 (buy)</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-lg" type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
+          Search
+        </button>
+      </form>
+      <p class="hero__note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>
+        No sign-up needed to browse&nbsp;·&nbsp;<b>0% tolerance for fake listings</b>&nbsp;·&nbsp;Agents based in Juba, not abroad
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ trust strip ============ -->
+<div class="strip">
+  <div class="container strip__in">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.5-3 7.9-7 9.7-4-1.8-7-5.2-7-9.7V5.6L12 3z"/><path d="M9.2 11.8l2 2 3.8-4.2"/></svg>Physical inspection before every badge</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>GPS match within 50 m of the address</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>Timestamped, on-site photos only</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>Ownership documents sighted</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Median turnaround: 48 hours</span>
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0c0 4.8-6.5 10-6.5 10z"/><circle cx="12" cy="11" r="2.2"/></svg>15 neighbourhoods across Juba</span>
+  </div>
+</div>
+
+<!-- ============ stats ============ -->
+<section class="section" style="padding-top:3.2rem; padding-bottom:2rem">
+  <div class="container">
+    <div class="stats">
+      <div class="stat reveal"><b><span data-count="100">0</span><sup>%</sup></b><span>of live listings physically inspected</span></div>
+      <div class="stat reveal"><b><span data-count="1240">0</span><sup>+</sup></b><span>properties verified since launch</span></div>
+      <div class="stat reveal"><b><span data-count="48">0</span><sup>hrs</sup></b><span>median time from listing to badge</span></div>
+      <div class="stat reveal"><b><span data-count="15">0</span></b><span>Juba neighbourhoods covered</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ how it works ============ -->
+<section class="section section--tint">
+  <div class="container">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow">How PropTech works</span>
+      <h2>No badge without boots on the ground</h2>
+      <p>Anyone can post a photo on WhatsApp. Only a real visit earns our shield. Here’s the journey every listing takes.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="step__num">1</span>
+        <span class="step__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/><path d="M10 20v-5h4v5"/></svg></span>
+        <h3>List in two minutes</h3>
+        <p>Owners submit the property online or via WhatsApp — type by word-of-mouth, but captured properly, with photos and a price.</p>
+      </div>
+      <div class="step reveal">
+        <span class="step__num">2</span>
+        <span class="step__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg></span>
+        <h3>Agent goes on-site</h3>
+        <p>A PropTech field agent visits within 48 hours, walks every room or boundary, and captures GPS coordinates standing at the property.</p>
+      </div>
+      <div class="step reveal">
+        <span class="step__num">3</span>
+        <span class="step__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg></span>
+        <h3>Photos &amp; documents checked</h3>
+        <p>Every photo is timestamped on-site. Titles, allocation letters or chief’s attestations are sighted and cross-checked for duplicates.</p>
+      </div>
+      <div class="step reveal">
+        <span class="step__num">4</span>
+        <span class="step__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8.5" cy="14.5" r="4.5"/><path d="M11.7 11.3L20 3M16 7l3 3M13.5 9.5l2.5 2.5"/></svg></span>
+        <h3>Rent with confidence</h3>
+        <p>The listing goes live with its verification report. You view, sign and pay the owner directly — commission applies only on a signed lease.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ featured listings ============ -->
+<section class="section">
+  <div class="container">
+    <div class="row-between reveal" style="margin-bottom:1.8rem">
+      <div class="sec-head" style="margin-bottom:0">
+        <span class="eyebrow">Freshly verified</span>
+        <h2>This week in Juba</h2>
+      </div>
+      <div class="view-toggle" id="featChips" role="tablist" aria-label="Filter featured listings">
+        <button class="active" data-f="">All</button>
+        <button data-f="homes">Houses &amp; flats</button>
+        <button data-f="room">Rooms</button>
+        <button data-f="land">Land</button>
+      </div>
+    </div>
+    <div class="cards" id="featuredGrid"></div>
+    <div class="center" style="margin-top:2.2rem">
+      <a class="btn btn-outline btn-lg" href="listings.html">Browse all verified listings
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ verification deep-dive ============ -->
+<section class="section section--tint">
+  <div class="container split">
+    <div class="split__media reveal">
+      <img src="assets/prop-01.jpg" alt="PropTech agent-inspected compound house in Tongpiny, Juba">
+      <span class="float-chip float-chip--gps">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="6.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3"/></svg>
+        GPS match · <em>12 m</em>
+      </span>
+      <span class="float-chip float-chip--cam">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-2.5h6L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.4"/></svg>
+        6 photos · <em>17 Jul 2026</em>
+      </span>
+      <div class="report-mini">
+        <span class="rshield"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 2.6v5.2c0 4.5-3 7.9-7 9.7-4-1.8-7-5.2-7-9.7V5.6L12 3z"/><path d="M9.2 11.8l2 2 3.8-4.2"/></svg></span>
+        <div><b>Verification Report PT-1001</b><span>Tongpiny · signed by Agent James L.</span></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <span class="eyebrow">The verification standard</span>
+      <h2>What the green shield actually means</h2>
+      <ul class="check-list">
+        <li>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div><b>An agent stood there.</b><p>A named PropTech agent physically visited — not a phone call, not a screenshot from the owner.</p></div>
+        </li>
+        <li>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div><b>The map pin is the real place.</b><p>GPS is captured on-site and must land within 50 m of the listed address, or the listing is rejected.</p></div>
+        </li>
+        <li>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div><b>Photos are provably fresh.</b><p>Timestamped during the visit — never recycled from last year’s WhatsApp group.</p></div>
+        </li>
+        <li>
+          <span class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+          <div><b>Paperwork exists.</b><p>Title deed, allocation letter or chief’s attestation sighted — plus a duplicate-listing scam screen.</p></div>
+        </li>
+      </ul>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="property.html?id=PT-1001">Read a real verification report</a>
+        <a class="btn btn-outline" href="agents.html">See the agent console</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ coverage ============ -->
+<section class="section" style="padding-top:3.4rem; padding-bottom:3rem">
+  <div class="container">
+    <div class="sec-head reveal" style="margin-bottom:1.4rem">
+      <span class="eyebrow">Coverage</span>
+      <h2>Where our agents walk</h2>
+      <p>From Tongpiny to Gumbo — and growing every month as new agents are trained and background-checked.</p>
+    </div>
+    <div class="hoods reveal" id="hoodChips"></div>
+  </div>
+</section>
+
+<!-- ============ pricing preview ============ -->
+<section class="section section--tint">
+  <div class="container">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow">How PropTech earns</span>
+      <h2>Simple, honest pricing</h2>
+      <p>Free for house-hunters. Landlords pay a small fee for verification — and a commission only when a lease actually signs.</p>
+    </div>
+    <div class="pricing">
+      <div class="price-card reveal">
+        <h3>Browse &amp; shortlist</h3>
+        <p class="who">For house-hunters</p>
+        <div class="num">$0 <small>forever</small></div>
+        <p class="num-note">No account needed</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Full access to every verified listing &amp; report</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Map search across 15 neighbourhoods</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Contact owners directly by phone or WhatsApp</li>
+        </ul>
+        <a class="btn btn-outline" href="listings.html">Start browsing</a>
+      </div>
+      <div class="price-card price-card--featured reveal">
+        <span class="price-card__ribbon">Most popular</span>
+        <h3>Verified Badge</h3>
+        <p class="who">For landlords &amp; land sellers</p>
+        <div class="num">$25 <small>one-time / listing</small></div>
+        <p class="num-note">Payable after the agent visit — not before</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Physical agent visit within 48 hours</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>GPS capture + timestamped photo set</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Documents check &amp; duplicate-scam screen</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>90-day badge · re-verify for $15</li>
+        </ul>
+        <a class="btn btn-primary" href="list-property.html">Get my listing verified</a>
+      </div>
+      <div class="price-card reveal">
+        <h3>Success commission</h3>
+        <p class="who">Optional brokerage, paid by landlord</p>
+        <div class="num">5% <small>of first-year lease</small></div>
+        <p class="num-note">Charged only when a lease signs — no deal, no fee</p>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>We schedule and host viewings</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Tenant screening &amp; intro call</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></svg>Simple lease paperwork template</li>
+        </ul>
+        <a class="btn btn-outline" href="pricing.html">See full pricing &amp; FAQ</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA band ============ -->
+<section class="section" style="padding-top:1rem">
+  <div class="container">
+    <div class="cta-band reveal">
+      <svg class="art" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 2.6v5.2c0 4.5-3 7.9-7 9.7-4-1.8-7-5.2-7-9.7V5.6L12 3z"/><path d="M9.2 11.8l2 2 3.8-4.2"/></svg>
+      <h2>Own a home or plot in Juba? Put the green shield on it.</h2>
+      <p>Verified listings rent out faster and attract serious tenants. List today — an agent will be at your gate within 48 hours.</p>
+      <div class="cta-actions">
+        <a class="btn btn-light btn-lg" href="list-property.html">List a property — $25 after visit</a>
+        <a class="btn btn-ghost btn-lg" href="https://wa.me/211915234800?text=Hello%20PropTech%2C%20I%27d%20like%20to%20talk%20to%20an%20agent%20about%20my%20property." target="_blank" rel="noopener">Talk to an agent on WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ============ footer ============ -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect width="40" height="40" rx="10" fill="#0e7a6c"/>
+          <path d="M9 19.5 20 10l11 9.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 18.5V31h16V18.5" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M17 24l2.2 2.2L24 21.5" stroke="#5eead4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="brand__name">PropTech<em>JUBA</em></span>
+      </a>
+      <p>Verified rental listings &amp; land for Juba, South Sudan. Every listing inspected in person — GPS-tagged, photographed, documented.</p>
+    </div>
+    <div>
+      <h4>Explore</h4>
+      <a href="listings.html">Browse verified homes</a>
+      <a href="listings.html?lt=sale">Land for sale</a>
+      <a href="property.html?id=PT-1001">Sample verification report</a>
+      <a href="pricing.html">Pricing</a>
+    </div>
+    <div>
+      <h4>For owners</h4>
+      <a href="list-property.html">List your property</a>
+      <a href="pricing.html#faq">Verification FAQ</a>
+      <a href="agents.html">Field-agent console (demo)</a>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul class="footer-contact">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.2-6.5-10a6.5 6.5 0 0 1 13 0c0 4.8-6.5 10-6.5 10z"/><circle cx="12" cy="11" r="2.2"/></svg>Hai Malakal, off Ministries Road, Juba</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l1.5 4.5L8 10a12 12 0 0 0 6 6l1.5-2.5L20 15v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>+211 915 234 800 · Mon–Sat, 8:00–18:00</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 0-3.2 6.4L20 19l-.8-3.1A8 8 0 0 0 20 12z"/></svg>hello@proptech.ss</li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© <span data-year>2026</span> PropTech Ltd · Juba, South Sudan</span>
+    <span>Demonstration website — listings, people &amp; prices are illustrative.</span>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+<script src="js/home.js"></script>
+</body>
+</html>
