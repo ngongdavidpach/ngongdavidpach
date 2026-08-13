@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}{{ owner.name }} - Property Records{% endblock %}
+
+{% block header_title %}Owner Details{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Owner Info -->
+    <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-start justify-between mb-6">
+                <div class="flex items-center space-x-4">
+                    <div class="w-16 h-16 bg-blue-900 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                        {{ owner.name[0] if owner.name else 'O' }}
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">{{ owner.name }}</h2>
+                        <span class="px-3 py-1 text-sm font-medium rounded-full 
+                                    {% if owner.owner_type == 'Individual' %}bg-blue-100 text-blue-800
+                                    {% elif owner.owner_type == 'Organization' %}bg-purple-100 text-purple-800
+                                    {% elif owner.owner_type == 'Government' %}bg-green-100 text-green-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ owner.owner_type }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                {% if owner.owner_type == 'Individual' %}
+                <div>
+                    <p class="text-sm text-gray-500">ID Number</p>
+                    <p class="font-medium">{{ owner.id_number or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Date of Birth</p>
+                    <p class="font-medium">{{ owner.date_of_birth.strftime('%Y-%m-%d') if owner.date_of_birth else '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Gender</p>
+                    <p class="font-medium">{{ owner.gender or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Nationality</p>
+                    <p class="font-medium">{{ owner.nationality or '-' }}</p>
+                </div>
+                {% else %}
+                <div>
+                    <p class="text-sm text-gray-500">Registration Number</p>
+                    <p class="font-medium">{{ owner.registration_number or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Tax ID</p>
+                    <p class="font-medium">{{ owner.tax_id or '-' }}</p>
+                </div>
+                {% endif %}
+                
+                <div>
+                    <p class="text-sm text-gray-500">Phone</p>
+                    <p class="font-medium">{{ owner.phone or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Email</p>
+                    <p class="font-medium">{{ owner.email or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Postal Address</p>
+                    <p class="font-medium">{{ owner.postal_address or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Location</p>
+                    <p class="font-medium">{{ owner.county or '' }}{% if owner.county and owner.state %}, {% endif %}{{ owner.state or '-' }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Owned Properties -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Owned Properties</h3>
+            {% if property_owners %}
+            <div class="space-y-3">
+                {% for po in property_owners %}
+                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div>
+                        <a href="{{ url_for('property_detail', property_id=po.property.id) }}" 
+                           class="font-medium text-blue-600 hover:text-blue-800">
+                            {{ po.property.property_number }}
+                        </a>
+                        <p class="text-sm text-gray-500">{{ po.property.county }}, {{ po.property.state }}</p>
+                        <p class="text-xs text-gray-400">{{ po.property.property_type }}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-blue-600">{{ po.ownership_share }}%</p>
+                        {% if po.is_primary %}
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Primary Owner</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-4">No properties owned</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="space-y-6">
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Quick Stats</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500">Total Properties</span>
+                    <span class="font-bold text-2xl text-blue-600">{{ property_owners|length }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-500">Primary Ownership</span>
+                    <span class="font-bold text-lg text-gray-800">{{ property_owners|selectattr('is_primary')|list|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{{ url_for('owners') }}" class="mt-6 inline-flex items-center text-blue-600 hover:text-blue-800">
+    <i class="fas fa-arrow-left mr-2"></i> Back to Owners
+</a>
+{% endblock %}

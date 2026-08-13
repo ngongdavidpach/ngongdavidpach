@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Register Property - Property Records{% endblock %}
+
+{% block header_title %}Register New Property{% endblock %}
+
+{% block content %}
+<form method="POST" class="bg-white rounded-xl shadow-sm p-6 max-w-4xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Location Information -->
+        <div class="md:col-span-2">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Location Information</h3>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
+            <select name="state" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">Select State</option>
+                {% for s in states %}
+                <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">County *</label>
+            <input type="text" name="county" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Payam</label>
+            <input type="text" name="payam" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Boma</label>
+            <input type="text" name="boma" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Village</label>
+            <input type="text" name="village" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Street</label>
+            <input type="text" name="street" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Plot Number</label>
+            <input type="text" name="plot_number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Block Number</label>
+            <input type="text" name="block_number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <!-- Property Details -->
+        <div class="md:col-span-2 mt-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 border-b pb-2">Property Details</h3>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Property Type *</label>
+            <select name="property_type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">Select Type</option>
+                {% for pt in property_types %}
+                <option value="{{ pt }}">{{ pt }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Ownership Type *</label>
+            <select name="ownership_type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">Select Ownership</option>
+                {% for ot in ownership_types %}
+                <option value="{{ ot }}">{{ ot }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Land Area (m²)</label>
+            <input type="number" step="0.01" name="land_area_sqm" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Building Area (m²)</label>
+            <input type="number" step="0.01" name="building_area_sqm" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Year Built</label>
+            <input type="number" name="year_built" min="1900" max="2024" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Rooms</label>
+            <input type="number" name="number_of_rooms" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Assessed Value (SSP)</label>
+            <input type="number" step="0.01" name="assessed_value" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Market Value (SSP)</label>
+            <input type="number" step="0.01" name="market_value" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Annual Tax (SSP)</label>
+            <input type="number" step="0.01" name="annual_tax" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Title Number</label>
+            <input type="text" name="title_number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea name="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
+            <input type="number" step="0.00000001" name="latitude" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
+            <input type="number" step="0.00000001" name="longitude" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+        </div>
+    </div>
+    
+    <div class="mt-6 flex gap-4">
+        <button type="submit" class="px-6 py-3 bg-blue-900 text-white rounded-lg hover:bg-blue-800 font-medium">
+            <i class="fas fa-save mr-2"></i> Register Property
+        </button>
+        <a href="{{ url_for('properties') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">
+            <i class="fas fa-times mr-2"></i> Cancel
+        </a>
+    </div>
+</form>
+{% endblock %}
