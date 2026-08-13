@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}{{ property.property_number }} - Property Records{% endblock %}
+
+{% block header_title %}Property Details{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Main Info -->
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Property Card -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">{{ property.property_number }}</h2>
+                    <p class="text-gray-500">{{ property.title_number or 'No Title Number' }}</p>
+                </div>
+                <span class="px-3 py-1 text-sm font-medium rounded-full 
+                            {% if property.status == 'Active' %}bg-green-100 text-green-800
+                            {% elif property.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ property.status }}
+                </span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <div>
+                    <p class="text-sm text-gray-500">State</p>
+                    <p class="font-medium">{{ property.state }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">County</p>
+                    <p class="font-medium">{{ property.county }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Payam</p>
+                    <p class="font-medium">{{ property.payam or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Boma/Village</p>
+                    <p class="font-medium">{{ property.boma or property.village or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Plot Number</p>
+                    <p class="font-medium">{{ property.plot_number or '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Block Number</p>
+                    <p class="font-medium">{{ property.block_number or '-' }}</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 mt-6 pt-6">
+                <h3 class="font-semibold text-gray-800 mb-4">Property Details</h3>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-500">Type</p>
+                        <p class="font-medium">{{ property.property_type }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Ownership</p>
+                        <p class="font-medium">{{ property.ownership_type }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500">Land Area</p>
+                        <p class="font-medium">{{ "%.0f"|format(property.land_area_sqm) if property.land_area_sqm else '-' }} m²</p>
+                    </div>
+                    {% if property.building_area_sqm %}
+                    <div>
+                        <p class="text-sm text-gray-500">Building Area</p>
+                        <p class="font-medium">{{ "%.0f"|format(property.building_area_sqm) }} m²</p>
+                    </div>
+                    {% endif %}
+                    {% if property.year_built %}
+                    <div>
+                        <p class="text-sm text-gray-500">Year Built</p>
+                        <p class="font-medium">{{ property.year_built }}</p>
+                    </div>
+                    {% endif %}
+                    {% if property.number_of_rooms %}
+                    <div>
+                        <p class="text-sm text-gray-500">Rooms</p>
+                        <p class="font-medium">{{ property.number_of_rooms }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if property.description %}
+            <div class="border-t border-gray-200 mt-6 pt-6">
+                <h3 class="font-semibold text-gray-800 mb-2">Description</h3>
+                <p class="text-gray-600">{{ property.description }}</p>
+            </div>
+            {% endif %}
+            
+            {% if property.latitude and property.longitude %}
+            <div class="border-t border-gray-200 mt-6 pt-6">
+                <h3 class="font-semibold text-gray-800 mb-2">Coordinates</h3>
+                <p class="text-gray-600">Latitude: {{ property.latitude }}, Longitude: {{ property.longitude }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Owners -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Property Owners</h3>
+            {% if owners %}
+            <div class="space-y-3">
+                {% for po in owners %}
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                        <p class="font-medium text-gray-800">{{ po.owner.name }}</p>
+                        <p class="text-sm text-gray-500">{{ po.owner.owner_type }}{% if po.owner.id_number %} - {{ po.owner.id_number }}{% endif %}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-blue-600">{{ po.ownership_share }}%</p>
+                        {% if po.is_primary %}
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Primary</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500">No owners registered</p>
+            {% endif %}
+        </div>
+        
+        <!-- Transactions -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Transaction History</h3>
+            {% if transactions %}
+            <div class="space-y-3">
+                {% for txn in transactions %}
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-gray-800">{{ txn.transaction_number }}</p>
+                            <p class="text-sm text-gray-500">{{ txn.transaction_type }} - {{ txn.transaction_date.strftime('%Y-%m-%d') }}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                    {% if txn.status == 'Completed' %}bg-green-100 text-green-800
+                                    {% elif txn.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-blue-100 text-blue-800{% endif %}">
+                            {{ txn.status }}
+                        </span>
+                    </div>
+                    {% if txn.transaction_amount %}
+                    <p class="text-sm text-gray-600 mt-2">Amount: £{{ "%.2f"|format(txn.transaction_amount) }} SSP</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500">No transactions recorded</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="space-y-6">
+        <!-- Valuation -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Valuation</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Assessed Value</span>
+                    <span class="font-medium">£{{ "%.2f"|format(property.assessed_value) if property.assessed_value else '-' }} SSP</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Market Value</span>
+                    <span class="font-medium">£{{ "%.2f"|format(property.market_value) if property.market_value else '-' }} SSP</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-500">Annual Tax</span>
+                    <span class="font-medium">£{{ "%.2f"|format(property.annual_tax) if property.annual_tax else '-' }} SSP</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Documents -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Documents</h3>
+            {% if documents %}
+            <div class="space-y-2">
+                {% for doc in documents %}
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium text-gray-800 text-sm">{{ doc.document_type }}</p>
+                    <p class="text-xs text-gray-500">{{ doc.document_number }}</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <span class="text-xs {% if doc.is_verified %}text-green-600{% else %}text-gray-500{% endif %}">
+                            {% if doc.is_verified %}<i class="fas fa-check-circle"></i> Verified{% else %}Not Verified{% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500">No documents uploaded</p>
+            {% endif %}
+        </div>
+        
+        <!-- Disputes -->
+        {% if disputes %}
+        <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-red-500">
+            <h3 class="font-semibold text-red-600 mb-4"><i class="fas fa-exclamation-triangle mr-2"></i>Disputes</h3>
+            <div class="space-y-3">
+                {% for dispute in disputes %}
+                <div class="p-3 bg-red-50 rounded-lg">
+                    <p class="font-medium text-red-800">{{ dispute.case_number }}</p>
+                    <p class="text-sm text-red-600">{{ dispute.dispute_type }}</p>
+                    <span class="text-xs px-2 py-1 rounded {% if dispute.status == 'Active' %}bg-red-200 text-red-800{% else %}bg-gray-200 text-gray-800{% endif %}">
+                        {{ dispute.status }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Actions -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Actions</h3>
+            <div class="space-y-2">
+                <a href="{{ url_for('new_transaction') }}?property_id={{ property.id }}" 
+                   class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                    <i class="fas fa-exchange-alt mr-2"></i> Record Transaction
+                </a>
+                <button class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-download mr-2"></i> Export Report
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{{ url_for('properties') }}" class="mt-6 inline-flex items-center text-blue-600 hover:text-blue-800">
+    <i class="fas fa-arrow-left mr-2"></i> Back to Properties
+</a>
+{% endblock %}

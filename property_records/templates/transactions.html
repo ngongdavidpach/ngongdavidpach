@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Transactions - Property Records{% endblock %}
+
+{% block header_title %}Property Transactions{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm">
+    <!-- Filters -->
+    <div class="p-6 border-b border-gray-200">
+        <form method="GET" class="flex gap-4">
+            <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">All Statuses</option>
+                <option value="Pending" {% if current_filters.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Approved" {% if current_filters.status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Completed" {% if current_filters.status == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Rejected" {% if current_filters.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+            </select>
+            
+            <select name="transaction_type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">All Types</option>
+                {% for tt in transaction_types %}
+                <option value="{{ tt }}" {% if current_filters.transaction_type == tt %}selected{% endif %}>{{ tt }}</option>
+                {% endfor %}
+            </select>
+            
+            <button type="submit" class="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800">
+                <i class="fas fa-search mr-2"></i> Filter
+            </button>
+            <a href="{{ url_for('transactions') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                <i class="fas fa-times"></i>
+            </a>
+        </form>
+    </div>
+    
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction No.</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Property</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount (SSP)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for txn in transactions %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap font-medium text-blue-600">{{ txn.transaction_number }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800">{{ txn.transaction_type }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ url_for('property_detail', property_id=txn.property_id) }}" 
+                           class="text-blue-600 hover:text-blue-800">
+                            {{ txn.property.property_number }}
+                        </a>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                        {{ txn.transaction_date.strftime('%Y-%m-%d') if txn.transaction_date else '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 font-medium">
+                        {{ "%.2f"|format(txn.transaction_amount) if txn.transaction_amount else '-' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                    {% if txn.status == 'Completed' %}bg-green-100 text-green-800
+                                    {% elif txn.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                    {% elif txn.status == 'Approved' %}bg-blue-100 text-blue-800
+                                    {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ txn.status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ url_for('transaction_detail', transaction_id=txn.id) }}" 
+                           class="text-blue-600 hover:text-blue-800 font-medium">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">No transactions found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <p class="text-sm text-gray-600">Showing {{ pagination.page }} of {{ pagination.pages }} pages</p>
+        <div class="flex gap-2">
+            {% if pagination.has_prev %}
+            <a href="?page={{ pagination.prev_num }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Previous</a>
+            {% endif %}
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <a href="?page={{ page_num }}" 
+                   class="px-3 py-1 rounded {% if page_num == pagination.page %}bg-blue-900 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <span class="px-3 py-1">...</span>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+            <a href="?page={{ pagination.next_num }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div class="mt-4">
+    <a href="{{ url_for('new_transaction') }}" class="inline-flex items-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 shadow-md">
+        <i class="fas fa-plus-circle mr-2"></i> Record New Transaction
+    </a>
+</div>
+{% endblock %}

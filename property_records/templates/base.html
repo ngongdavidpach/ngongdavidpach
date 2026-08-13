@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Property Records - South Sudan{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar { background: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%); }
+        .nav-item:hover { background-color: rgba(255,255,255,0.1); }
+        .nav-item.active { background-color: rgba(255,255,255,0.15); border-left: 4px solid #3b82f6; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    {% if current_user.is_authenticated %}
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 flex-shrink-0 text-white">
+            <div class="p-4">
+                <div class="flex items-center space-x-3 mb-8">
+                    <i class="fas fa-building text-3xl"></i>
+                    <div>
+                        <h1 class="text-lg font-bold">Property Records</h1>
+                        <p class="text-xs text-gray-300">Republic of South Sudan</p>
+                    </div>
+                </div>
+                
+                <nav class="space-y-1">
+                    <a href="{{ url_for('index') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'index' }}">
+                        <i class="fas fa-home mr-3"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('properties') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'properties' }}">
+                        <i class="fas fa-home mr-3"></i> Properties
+                    </a>
+                    <a href="{{ url_for('owners') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'owners' }}">
+                        <i class="fas fa-users mr-3"></i> Owners
+                    </a>
+                    <a href="{{ url_for('transactions') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'transactions' }}">
+                        <i class="fas fa-exchange-alt mr-3"></i> Transactions
+                    </a>
+                    <a href="{{ url_for('disputes') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'disputes' }}">
+                        <i class="fas fa-gavel mr-3"></i> Disputes
+                    </a>
+                    <a href="{{ url_for('reports') }}" class="nav-item block px-4 py-3 rounded-lg transition-colors {{ 'active' if request.endpoint == 'reports' }}">
+                        <i class="fas fa-chart-bar mr-3"></i> Reports
+                    </a>
+                </nav>
+            </div>
+            
+            <div class="absolute bottom-0 w-64 p-4 border-t border-gray-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-medium">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+                        <p class="text-xs text-gray-400">{{ current_user.role|capitalize }}</p>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="text-gray-400 hover:text-white">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <header class="bg-white shadow-sm">
+                <div class="px-6 py-4">
+                    <h2 class="text-2xl font-bold text-gray-800">{% block header_title %}Dashboard{% endblock %}</h2>
+                </div>
+            </header>
+            
+            <div class="p-6">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    {% else %}
+    <div class="min-h-screen bg-gradient-to-br from-blue-900 to-blue-700 flex items-center justify-center p-4">
+        {% block login_content %}{% endblock %}
+    </div>
+    {% endif %}
+</body>
+</html>

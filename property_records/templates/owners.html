@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Owners - Property Records{% endblock %}
+
+{% block header_title %}Property Owners{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm">
+    <!-- Search -->
+    <div class="p-6 border-b border-gray-200">
+        <form method="GET" class="flex gap-4">
+            <input type="text" name="search" placeholder="Search by name or ID..." value="{{ current_filters.search or '' }}"
+                   class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            
+            <select name="owner_type" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                <option value="">All Types</option>
+                <option value="Individual" {% if current_filters.owner_type == 'Individual' %}selected{% endif %}>Individual</option>
+                <option value="Organization" {% if current_filters.owner_type == 'Organization' %}selected{% endif %}>Organization</option>
+                <option value="Government" {% if current_filters.owner_type == 'Government' %}selected{% endif %}>Government</option>
+            </select>
+            
+            <button type="submit" class="px-6 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800">
+                <i class="fas fa-search mr-2"></i> Search
+            </button>
+            <a href="{{ url_for('owners') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">
+                <i class="fas fa-times"></i>
+            </a>
+        </form>
+    </div>
+    
+    <!-- Table -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID Number</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for owner in owners %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="font-medium text-gray-900">{{ owner.name }}</div>
+                        {% if owner.organization_name and owner.organization_name != owner.name %}
+                        <div class="text-sm text-gray-500">{{ owner.organization_name }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full 
+                                    {% if owner.owner_type == 'Individual' %}bg-blue-100 text-blue-800
+                                    {% elif owner.owner_type == 'Organization' %}bg-purple-100 text-purple-800
+                                    {% elif owner.owner_type == 'Government' %}bg-green-100 text-green-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ owner.owner_type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ owner.id_number or '-' }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if owner.phone %}
+                        <div class="text-sm text-gray-900">{{ owner.phone }}</div>
+                        {% endif %}
+                        {% if owner.email %}
+                        <div class="text-sm text-gray-500">{{ owner.email }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if owner.county %}
+                        <div class="text-sm text-gray-900">{{ owner.county }}</div>
+                        {% endif %}
+                        {% if owner.state %}
+                        <div class="text-sm text-gray-500">{{ owner.state }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <a href="{{ url_for('owner_detail', owner_id=owner.id) }}" 
+                           class="text-blue-600 hover:text-blue-800 font-medium">View</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">No owners found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <div class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+        <p class="text-sm text-gray-600">Showing {{ pagination.page }} of {{ pagination.pages }} pages</p>
+        <div class="flex gap-2">
+            {% if pagination.has_prev %}
+            <a href="?page={{ pagination.prev_num }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Previous</a>
+            {% endif %}
+            {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <a href="?page={{ page_num }}" 
+                   class="px-3 py-1 rounded {% if page_num == pagination.page %}bg-blue-900 text-white{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">
+                    {{ page_num }}
+                </a>
+                {% else %}
+                <span class="px-3 py-1">...</span>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+            <a href="?page={{ pagination.next_num }}" class="px-3 py-1 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

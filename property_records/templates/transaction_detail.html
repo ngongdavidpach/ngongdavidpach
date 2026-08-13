@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ transaction.transaction_number }} - Property Records{% endblock %}
+
+{% block header_title %}Transaction Details{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl">
+    <div class="bg-white rounded-xl shadow-sm p-6">
+        <div class="flex items-start justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800">{{ transaction.transaction_number }}</h2>
+                <p class="text-gray-500">{{ transaction.transaction_type }}</p>
+            </div>
+            <span class="px-3 py-1 text-sm font-medium rounded-full 
+                        {% if transaction.status == 'Completed' %}bg-green-100 text-green-800
+                        {% elif transaction.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                        {% elif transaction.status == 'Approved' %}bg-blue-100 text-blue-800
+                        {% else %}bg-red-100 text-red-800{% endif %}">
+                {{ transaction.status }}
+            </span>
+        </div>
+        
+        <div class="border-t border-gray-200 pt-6">
+            <h3 class="font-semibold text-gray-800 mb-4">Transaction Information</h3>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-gray-500">Property</p>
+                    <a href="{{ url_for('property_detail', property_id=transaction.property.id) }}" 
+                       class="font-medium text-blue-600 hover:text-blue-800">
+                        {{ transaction.property.property_number }}
+                    </a>
+                    <p class="text-sm text-gray-500">{{ transaction.property.county }}, {{ transaction.property.state }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Transaction Date</p>
+                    <p class="font-medium">{{ transaction.transaction_date.strftime('%Y-%m-%d %H:%M') if transaction.transaction_date else '-' }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Seller/Transferor</p>
+                    {% if transaction.seller %}
+                    <p class="font-medium">{{ transaction.seller.name }}</p>
+                    <p class="text-sm text-gray-500">{{ transaction.seller.owner_type }}</p>
+                    {% else %}
+                    <p class="text-gray-400">Not specified</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Buyer/Transferee</p>
+                    {% if transaction.buyer %}
+                    <p class="font-medium">{{ transaction.buyer.name }}</p>
+                    <p class="text-sm text-gray-500">{{ transaction.buyer.owner_type }}</p>
+                    {% else %}
+                    <p class="text-gray-400">Not specified</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Transaction Amount</p>
+                    <p class="font-medium text-lg text-gray-900">£{{ "%.2f"|format(transaction.transaction_amount) if transaction.transaction_amount else '-' }} SSP</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Payment Method</p>
+                    <p class="font-medium">{{ transaction.payment_method or '-' }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Deed Number</p>
+                    <p class="font-medium">{{ transaction.deed_number or '-' }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Registration Date</p>
+                    <p class="font-medium">{{ transaction.registration_date.strftime('%Y-%m-%d') if transaction.registration_date else '-' }}</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Stamp Duty Paid</p>
+                    <p class="font-medium">£{{ "%.2f"|format(transaction.stamp_duty_paid) if transaction.stamp_duty_paid else '-' }} SSP</p>
+                </div>
+                
+                <div>
+                    <p class="text-sm text-gray-500">Registration Fee</p>
+                    <p class="font-medium">£{{ "%.2f"|format(transaction.registration_fee) if transaction.registration_fee else '-' }} SSP</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if transaction.remarks %}
+        <div class="border-t border-gray-200 mt-6 pt-6">
+            <h3 class="font-semibold text-gray-800 mb-2">Remarks</h3>
+            <p class="text-gray-600">{{ transaction.remarks }}</p>
+        </div>
+        {% endif %}
+        
+        {% if transaction.approved_date %}
+        <div class="border-t border-gray-200 mt-6 pt-6">
+            <h3 class="font-semibold text-gray-800 mb-2">Approval Information</h3>
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <p class="text-sm text-gray-500">Approved By</p>
+                    <p class="font-medium">{{ transaction.approved_by.name if transaction.approved_by else '-' }}</p>
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500">Approved Date</p>
+                    <p class="font-medium">{{ transaction.approved_date.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="mt-6 flex gap-4">
+        <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
+            <i class="fas fa-print mr-2"></i> Print Transaction
+        </button>
+        <a href="{{ url_for('transactions') }}" class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 font-medium">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Transactions
+        </a>
+    </div>
+</div>
+{% endblock %}
